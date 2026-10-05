@@ -8,8 +8,8 @@ const LINK=location.origin+location.pathname;   // la dirección de la página, 
 const FACEBOOK='https://www.facebook.com/profile.php?id=61553411789368';
 const INSTAGRAM='https://www.instagram.com/polloscolorado';
 
-// Fotos: cada nombre apunta a un archivo de la carpeta img/
-const IMG=new Proxy({},{get:(_,k)=>`img/${String(k)}.webp`});
+// Fotos: cada nombre apunta a un archivo .webp junto a index.html
+const IMG=new Proxy({},{get:(_,k)=>`${String(k)}.webp`});
 
 // ===== Productos agotados =====
 // Se leen de una hoja de Google. Mientras SHEET_ID esté vacío, todo aparece disponible.

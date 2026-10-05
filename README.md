@@ -15,10 +15,10 @@ le abre WhatsApp con el pedido ya redactado para el negocio.
 
 ## Estructura
 ```
-index.html        estructura de la página
-css/estilos.css   diseño y colores
-js/app.js         menú, carrito y mensaje de WhatsApp
-img/              fotos de los productos
+index.html   estructura de la página
+estilos.css  diseño y colores
+app.js       menú, carrito y mensaje de WhatsApp
+*.webp       fotos de los productos
 ```
 
 ## Hecho con
