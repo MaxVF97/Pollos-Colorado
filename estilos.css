@@ -180,3 +180,48 @@ details.prev summary{cursor:pointer;margin-top:18px;font-weight:700}
 .mini button[data-rm]{color:var(--rojo)}
 .btn.main:disabled{background:var(--brasa-2);color:var(--humo);cursor:not-allowed}
 .estado-msg{margin:12px 0 0;font-size:14px;color:var(--ambar);min-height:1em}
+
+/* Estado abierto / cerrado */
+.estado{font-family:var(--label);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:12px;border-radius:999px;padding:4px 10px 4px 8px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ceniza);color:var(--humo);flex:none}
+.estado::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--rojo);flex:none}
+.estado.on{color:#7BE0A0;border-color:color-mix(in srgb,var(--wa) 60%,var(--ceniza))}
+.estado.on::before{background:#2FD27A;box-shadow:0 0 8px #2FD27A}
+@media (max-width:560px){.estado .largo{display:none}}
+@media (max-width:480px){.marca small{display:none}.marca b{font-size:24px}.estado{font-size:11px;padding:3px 8px 3px 6px}.top .wa-mini{padding:6px 10px;font-size:13px}}
+.aviso.horario{border-left-color:var(--ambar);align-items:center}
+.aviso.horario b{color:var(--ambar)}
+.aviso.horario svg{flex:none;color:var(--ambar)}
+
+/* Sabores */
+.nota-sabor{margin:0;font-size:14px;font-weight:600;color:var(--ambar)}
+.sabores-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.sab-chip{background:var(--brasa);border:1px solid var(--ceniza);border-radius:10px;padding:10px 12px;min-width:0}
+.sab-chip b{display:block;font-family:var(--display);font-weight:400;font-size:20px;text-transform:uppercase;letter-spacing:.02em}
+.sab-chip span{font-size:13px;color:var(--humo)}
+.sab-chip.off{opacity:.5}
+.sabor > span small{display:block;font-weight:400;font-size:12px;color:var(--humo)}
+.grupo{margin-top:6px}
+.grupo-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.grupo .small{margin:0 0 8px}
+.cuenta{font-family:var(--label);font-weight:700;letter-spacing:.04em;font-size:14px;color:var(--naranja);white-space:nowrap}
+
+/* Opciones de 3 columnas y botones chicos */
+.seg.tres{grid-template-columns:repeat(3,1fr)}
+.opt.chico{padding:10px 8px}
+.opt.chico b{font-size:15px}
+.opt.chico span{font-size:12px}
+.pico{margin:10px 0 0;font-size:14px;color:var(--ambar);background:color-mix(in srgb,var(--ambar) 10%,var(--carbon));border:1px solid color-mix(in srgb,var(--ambar) 40%,var(--ceniza));border-radius:10px;padding:8px 12px}
+.sub-pie{margin:0 0 6px;color:var(--humo);font-size:14px}
+
+/* Datos de transferencia */
+.transf{margin-top:12px;background:var(--carbon);border:1.5px dashed var(--naranja);border-radius:12px;padding:14px;display:grid;gap:8px}
+.t-tit{font-family:var(--label);text-transform:uppercase;letter-spacing:.1em;color:var(--naranja)}
+.t-fila{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.t-fila span{color:var(--humo);font-size:14px;min-width:90px}
+.t-fila b{font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.mini-copy{padding:4px 12px;font-size:13px}
+.t-aviso{margin:4px 0 0;font-size:14px;background:color-mix(in srgb,var(--naranja) 14%,var(--carbon));border-radius:8px;padding:10px 12px}
+
+.top .wa-mini{display:inline-flex;align-items:center;gap:6px}
+.top .wa-mini svg{color:#2FD27A}
+@media (max-width:480px){.top .wrap{gap:8px}.top .wa-mini{padding:7px}.top .wa-mini span{display:none}.marca svg{width:28px;height:33px}}
