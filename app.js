@@ -73,21 +73,25 @@ const disponibleOp=(g,k)=>!apagado(g.pref+k);
 //  exacto:   hay que elegir exactamente "por" opciones por cada unidad (ej. 1 sabor por medio pollo)
 //  opcional: se puede elegir hasta "por" opciones por unidad, cada una con costo extra
 //  cantidad: la cantidad del producto es la suma de lo elegido (salsas de sabor)
-const gSab=n=>({k:'sab',t:n>1?'Sabores':'Sabor',ops:SABORES,pref:'sab-',tipo:'exacto',por:n,ayuda:n>1?`Elige ${n} sabores (uno por cada medio pollo). Puedes repetir.`:'Incluye un sabor a elegir.'});
-const gSabX={k:'sabx',t:'¿Le pones sabor?',ops:SABORES.filter(s=>s[0]!=='adobado'),pref:'sab-',tipo:'opcional',por:1,precio:SABOR_EXTRA,ayuda:`Opcional, $${SABOR_EXTRA} extra. Si no eliges, va adobado tradicional.`};
-const gRef=n=>({k:'ref',t:n>1?'Refrescos grandes':'Refresco grande',ops:REFRESCOS,pref:'',tipo:'exacto',por:n,ayuda:n>1?`Elige ${n} refrescos de 1.5 L.`:'Refresco de 1.5 L.'});
+// Sabor por pieza de pollo, sin costo:
+//  pollo → completo de un sabor, o mitad y mitad (dos sabores)
+//  medio y cuarto → un sabor
+const gSab=piezas=>({k:'sab',t:'Sabor de tu pollo',ops:SABORES,pref:'sab-',tipo:'piezas',piezas});
+// Sabor extra o doble: se suma a los incluidos, $25 cada uno
+const gExtra={k:'extra',t:'¿Sabor extra o doble?',ops:SABORES,pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,ayuda:`Opcional, +$${SABOR_EXTRA} cada uno. Para doble, elige el mismo sabor que arriba.`};
+const gRef=n=>({k:'ref',t:n>1?'Refrescos grandes':'Refresco grande',ops:REFRESCOS,pref:'',tipo:'exacto',por:n,ayuda:n>1?`Elige ${n} refrescos de 1.5 L.`:'Refresco de 1.5 L.',slot:'Refresco'});
 
 const BASE=[['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['cebollita','Cebollita'],['chile','Chile toreado'],['totopos','Totopos']];
 const MENU=[
- {id:'cuarto',sec:'pollos',n:'1/4 Pollo',p:75,img:'cuarto',inc:BASE,g:[gSabX]},
- {id:'medio',sec:'pollos',n:'1/2 Pollo',p:125,img:'medio',inc:BASE,g:[gSab(1)]},
- {id:'entero',sec:'pollos',n:'1 Pollo',p:235,img:'entero',inc:BASE,g:[gSab(2)]},
- {id:'p1',sec:'paquetes',n:'Paquete 1',s:'1/4 de pollo',p:105,img:'p1',inc:[['','1/4 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','3 flautas'],['coca450','Coca-Cola chica'],['cebollita','Cebollita'],['chile','Chile']],g:[gSabX]},
- {id:'p2',sec:'paquetes',n:'Paquete 2',s:'1/2 de pollo',p:149,img:'p2',inc:[['','1/2 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['papas','1/2 orden de papa'],['coca450','Coca-Cola chica']],g:[gSab(1)]},
- {id:'p3',sec:'paquetes',n:'Paquete 3',s:'1 pollo',p:279,img:'p3',inc:[['','1 pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','5 flautas'],['ensalada','Ensalada'],['ref15','1 refresco grande']],g:[gSab(2),gRef(1)]},
- {id:'p4',sec:'paquetes',n:'Paquete 4',s:'1 pollo y 1/2',p:365,img:'p4',inc:[['','1 pollo y 1/2'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['sopa','1 sopa de codito'],['papas','1 orden de papas']],g:[gSab(3)]},
- {id:'p5',sec:'paquetes',n:'Paquete 5',s:'3 pollos',p:695,img:'p5',inc:[['','3 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','2 refrescos grandes'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(6),gRef(2)]},
- {id:'viernes',sec:'viernes',n:'Promoción de viernes',s:'2 pollos',p:449,img:'viernes',inc:[['','2 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','1 refresco grande']],g:[gSab(4),gRef(1)]},
+ {id:'cuarto',sec:'pollos',n:'1/4 Pollo',p:75,img:'cuarto',inc:BASE,g:[gSab(['cuarto']),gExtra]},
+ {id:'medio',sec:'pollos',n:'1/2 Pollo',p:125,img:'medio',inc:BASE,g:[gSab(['medio']),gExtra]},
+ {id:'entero',sec:'pollos',n:'1 Pollo',p:235,img:'entero',inc:BASE,g:[gSab(['pollo']),gExtra]},
+ {id:'p1',sec:'paquetes',n:'Paquete 1',s:'1/4 de pollo',p:105,img:'p1',inc:[['','1/4 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','3 flautas'],['coca450','Coca-Cola chica'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['cuarto']),gExtra]},
+ {id:'p2',sec:'paquetes',n:'Paquete 2',s:'1/2 de pollo',p:149,img:'p2',inc:[['','1/2 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['papas','1/2 orden de papa'],['coca450','Coca-Cola chica']],g:[gSab(['medio']),gExtra]},
+ {id:'p3',sec:'paquetes',n:'Paquete 3',s:'1 pollo',p:279,img:'p3',inc:[['','1 pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','5 flautas'],['ensalada','Ensalada'],['ref15','1 refresco grande']],g:[gSab(['pollo']),gExtra,gRef(1)]},
+ {id:'p4',sec:'paquetes',n:'Paquete 4',s:'1 pollo y 1/2',p:365,img:'p4',inc:[['','1 pollo y 1/2'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['sopa','1 sopa de codito'],['papas','1 orden de papas']],g:[gSab(['pollo','medio']),gExtra]},
+ {id:'p5',sec:'paquetes',n:'Paquete 5',s:'3 pollos',p:695,img:'p5',inc:[['','3 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','2 refrescos grandes'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['pollo','pollo','pollo']),gExtra,gRef(2)]},
+ {id:'viernes',sec:'viernes',n:'Promoción de viernes',s:'2 pollos',p:449,img:'viernes',inc:[['','2 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','1 refresco grande']],g:[gSab(['pollo','pollo']),gExtra,gRef(1)]},
  {id:'arrachera',sec:'arrachera',n:'Arrachera texana',s:'Lo más premium del menú',p:320,img:'arrachera',inc:[['','1 kg de arrachera'],['frijoles','Frijoles de la olla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebolla'],['chile','Chile toreado'],['limon','Limón']]},
  {id:'flautas',sec:'extras',n:'Flautas',d:'$8 c/u · cada 5 por $35',p:8,img:'flautas'},
  {id:'arroz',sec:'extras',n:'Arroz',d:'Orden',p:20,img:'arroz'},
@@ -143,7 +147,7 @@ const precio=(m,q)=>m.id==='flautas' ? Math.floor(q/5)*35+(q%5)*8 : m.p*q;
 const suma=o=>Object.values(o||{}).reduce((a,n)=>a+n,0);
 function precioLinea(c){
   const m=byId(c.id); let t=precio(m,c.q);
-  (m.g||[]).forEach(g=>{ if(g.tipo==='opcional') t+=suma(c.sel&&c.sel[g.k])*g.precio; });
+  (m.g||[]).forEach(g=>{ if(g.precio) t+=suma(c.sel&&c.sel[g.k])*g.precio; });
   return t;
 }
 function desgloseFlautas(q){const g=Math.floor(q/5),r=q%5,p=[];
@@ -158,12 +162,25 @@ function eleccionTxt(g,o){
   return e.map(([k,n])=>`${n} ${nom[k]}`).join(', ');
 }
 // Renglones de detalle de una línea del pedido: [["Sabores","2 BBQ, 1 Ajo"], ...]
+const NOMBRE_PIEZA={pollo:'Pollo',medio:'Medio pollo',cuarto:'Cuarto'};
+// Le pone número a cada pieza solo si hay más de una del mismo tipo
+function etiquetasPiezas(pzs){
+  const tot={}, n={}; pzs.forEach(p=>tot[p.t]=(tot[p.t]||0)+1);
+  return pzs.map(p=>{n[p.t]=(n[p.t]||0)+1; return NOMBRE_PIEZA[p.t]+(tot[p.t]>1?' '+n[p.t]:'');});
+}
+const nomSabor=k=>(SABORES.find(x=>x[0]===k)||[,k])[1];
+function textoPieza(p){
+  if(p.t==='pollo'&&p.modo==='mitad'&&p.s[1]&&p.s[1]!==p.s[0]) return `½ ${nomSabor(p.s[0])} y ½ ${nomSabor(p.s[1])}`;
+  return nomSabor(p.s[0])+(p.t==='pollo'?' completo':'');
+}
 function detalles(c){
   const m=byId(c.id), d=[];
   (m.g||[]).forEach(g=>{
-    const o=c.sel&&c.sel[g.k]; if(!suma(o)) return;
-    const etiqueta=g.k==='ref'?(suma(o)>1?'Refrescos':'Refresco'):g.k==='sabx'?'Sabor extra':(suma(o)>1?'Sabores':'Sabor');
-    d.push([etiqueta, eleccionTxt(g,o)+(g.tipo==='opcional'?` (+${money(suma(o)*g.precio)})`:'')]);
+    const o=c.sel&&c.sel[g.k];
+    if(g.tipo==='piezas'){ if(Array.isArray(o)){ const et=etiquetasPiezas(o); o.forEach((p,i)=>d.push([et[i],textoPieza(p)])); } return; }
+    if(!suma(o)) return;
+    const etiqueta=g.k==='ref'?(suma(o)>1?'Refrescos':'Refresco'):g.k==='sabx'?'Sabor':g.k==='extra'?(suma(o)>1?'Sabores extra':'Sabor extra'):(suma(o)>1?'Sabores':'Sabor');
+    d.push([etiqueta, eleccionTxt(g,o)+(g.precio?` (+${money(suma(o)*g.precio)})`:'')]);
   });
   if(c.id==='flautas') d.push(['Precio',desgloseFlautas(c.q)]);
   return d;
@@ -190,7 +207,7 @@ const IC={
 function enCarrito(id){return CART.filter(c=>c.id===id).reduce((a,c)=>a+c.q,0);}
 function notaSabor(m){
   const g=(m.g||[]).find(x=>x.k==='sab'||x.k==='sabx'); if(!g) return '';
-  return g.k==='sab' ? `<p class="nota-sabor">🔥 Incluye ${g.por} ${g.por>1?'sabores':'sabor'} a elegir</p>` : `<p class="nota-sabor">Sabor opcional +${money(SABOR_EXTRA)}</p>`;
+  return g.piezas.includes('pollo') ? '<p class="nota-sabor">🔥 Sabor a elegir: completo o mitad y mitad</p>' : '<p class="nota-sabor">🔥 Incluye 1 sabor a elegir</p>';
 }
 function card(m,wide){
   const ok=disponible(m), sin=faltantes(m), n=enCarrito(m.id);
@@ -257,7 +274,7 @@ function render(){
   </div>
   <main class="wrap">
     ${sec('pollos','Pollos','Todos incluyen arroz, salsa, tortillas, cebollita, chile toreado y totopos. Cada medio pollo incluye un sabor a elegir.',`<div class="grid">${MENU.filter(m=>m.sec==='pollos').map(m=>card(m)).join('')}</div>`)}
-    ${sec('sabores','Nuestros sabores',`Uno incluido por cada medio pollo. En 1/4 de pollo cuesta ${money(SABOR_EXTRA)} extra.`,`<div class="sabores-lista">${SABORES.map(([k,l,d])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}${apagado('sab-'+k)?' <span class="tag">Agotado</span>':''}</b><span>${esc(d)}</span></div>`).join('')}</div>`)}
+    ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="sabores-lista">${SABORES.map(([k,l,d])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}${apagado('sab-'+k)?' <span class="tag">Agotado</span>':''}</b><span>${esc(d)}</span></div>`).join('')}</div>`)}
     ${sec('paquetes','Paquetes','Para compartir en familia. Eliges los sabores al agregarlo.',`<div class="grid">${MENU.filter(m=>m.sec==='paquetes').map(m=>card(m)).join('')}</div>`)}
     ${sec('viernes','Promo de viernes',VIERNES?'Solo hoy.':'Se puede pedir únicamente los viernes.',card(byId('viernes'),true))}
     ${sec('arrachera','Arrachera texana','',card(byId('arrachera'),true))}
@@ -324,23 +341,42 @@ function abrirItem(m,idx){
   const porCantidad=grupos.some(g=>g.tipo==='cantidad');   // salsas: la cantidad sale de los sabores
   const esFlauta=m.id==='flautas';
   let q=prev?prev.q:1;
-  const sel={}; grupos.forEach(g=>sel[g.k]=Object.assign({},prev&&prev.sel&&prev.sel[g.k]||{}));
-  const primeraLibre=g=>(g.ops.find(o=>disponibleOp(g,o[0]))||[])[0];
-  // Ajusta los grupos "exacto" a la cantidad: lo que falta se llena con la primera opción (adobado / Coca-Cola)
+  const sel={}; grupos.forEach(g=>{ const v=prev&&prev.sel&&prev.sel[g.k]; sel[g.k]=g.tipo==='piezas'?(Array.isArray(v)?JSON.parse(JSON.stringify(v)):[]):Object.assign({},v||{}); });
+  const libre=(g,k)=>disponibleOp(g,k);
+  const primeraLibre=g=>(g.ops.find(o=>libre(g,o[0]))||[])[0];
+  const meta=g=>g.por*q;
+  // Hasta 2 lugares se eligen con botones (uno por lugar); con más, con + y −
+  const modoBotones=g=>(g.tipo==='exacto'||g.tipo==='opcional') && meta(g)<=2;
+  // Lugares: ["adobado","bbq"] <-> conteo {adobado:1,bbq:1}
+  const lugares={};
+  let verExtra=grupos.some(g=>g.tipo==='multi'&&suma(sel[g.k])>0);   // la sección de sabor extra va plegada
+  const aLugares=g=>{const r=[]; Object.entries(sel[g.k]).forEach(([k,n])=>{for(let i=0;i<n;i++) r.push(k);}); return r;};
+  const deLugares=g=>{const o={}; lugares[g.k].forEach(k=>{ if(k) o[k]=(o[k]||0)+1; }); sel[g.k]=o;};
+  // Ajusta las elecciones cuando cambia la cantidad
   function ajustar(){
     grupos.forEach(g=>{
-      const o=sel[g.k];
-      if(g.tipo==='exacto'){
-        const meta=g.por*q; let s=suma(o); const def=primeraLibre(g);
-        if(s<meta && def){o[def]=(o[def]||0)+(meta-s);}
-        while(suma(o)>meta){const k=(o[def]?def:Object.keys(o).filter(x=>o[x]>0).pop()); o[k]--; if(!o[k]) delete o[k];}
+      const o=sel[g.k], def=primeraLibre(g);
+      if(g.tipo==='piezas'){ // una pieza por cada pollo / medio / cuarto según la cantidad
+        const tipos=[]; for(let i=0;i<q;i++) tipos.push(...g.piezas);
+        sel[g.k]=tipos.map((t,i)=>o[i]&&o[i].t===t?o[i]:{t,modo:'completo',s:[def]});
+        return;
       }
-      if(g.tipo==='opcional'){ while(suma(o)>g.por*q){const k=Object.keys(o).pop(); o[k]--; if(!o[k]) delete o[k];} }
+      if(g.tipo==='exacto'){
+        const s=suma(o); if(s<meta(g) && def) o[def]=(o[def]||0)+(meta(g)-s);
+        while(suma(o)>meta(g)){const k=(o[def]?def:Object.keys(o).filter(x=>o[x]>0).pop()); o[k]--; if(!o[k]) delete o[k];}
+      }
+      if(g.tipo==='opcional'){ while(suma(o)>meta(g)){const k=Object.keys(o).pop(); o[k]--; if(!o[k]) delete o[k];} }
+      if(modoBotones(g)){
+        const l=lugares[g.k]&&suma(sel[g.k])===lugares[g.k].filter(Boolean).length ? lugares[g.k].slice() : aLugares(g);
+        while(l.length<meta(g)) l.push(g.tipo==='exacto'?def:'');
+        lugares[g.k]=l.slice(0,meta(g)); deLugares(g);
+      }
     });
   }
   const sin=faltantes(m);
   const sub=m.inc?'Incluye '+esc(m.inc.map(x=>x[1]).join(', ').toLowerCase()):esc(m.d);
   const blanco=/^coca|^ref/.test(m.id);
+  const tieneSabor=grupos.some(g=>g.k==='sab'||g.k==='sabx');
   abrir(`${m.img?`<div class="ph" style="background-image:url(${IMG[m.img]})${blanco?';background-size:contain;background-color:#fff':''}"></div>`:''}
     <h3>${esc(m.n)}</h3>
     <p class="sub">${sub}</p>
@@ -348,42 +384,76 @@ function abrirItem(m,idx){
     ${porCantidad?'':`<span class="f">Cantidad</span>
     <div class="stepper"><button id="mn" aria-label="Menos">−</button><span id="q"></span><button id="pl" aria-label="Más">+</button></div>`}
     ${esFlauta?'<p class="small" id="desg"></p><p class="small">Cada grupo de 5 flautas cuesta $35; las sueltas, $8 cada una.</p>':''}
-    ${grupos.map(g=>`<div class="grupo">
-      <div class="grupo-h"><span class="f">${esc(g.t)}</span><span class="cuenta" data-cuenta="${g.k}"></span></div>
-      <p class="small">${esc(g.ayuda)}</p>
-      <div class="sabores">${g.ops.map(([k,l,d])=>{const off=!disponibleOp(g,k);
-        return `<div class="sabor ${off?'off':''}"><span>${esc(l)}${off?'<span class="tag">Agotado</span>':''}${d&&!off?`<small>${esc(d)}</small>`:''}</span>${off?'':`<div class="stepper"><button data-g="${g.k}" data-o="${k}" data-d="-1" aria-label="Menos ${esc(l)}">−</button><span data-v="${g.k}-${k}">0</span><button data-g="${g.k}" data-o="${k}" data-d="1" aria-label="Más ${esc(l)}">+</button></div>`}</div>`;}).join('')}</div></div>`).join('')}
+    <div id="grupos"></div>
+    ${tieneSabor?'<p class="tip">¿Quieres la salsa aparte? Escríbelo aquí abajo.</p>':''}
     <label class="f" for="nota">¿Alguna indicación? <small>(opcional)</small></label>
-    <textarea id="nota" placeholder="${blanco?'Ej. bien fría':'Ej. sin cebollita, salsa aparte'}">${esc(prev?prev.nota:'')}</textarea>
+    <textarea id="nota" placeholder="${blanco?'Ej. bien fría':tieneSabor?'Ej. salsa aparte, bien doradito':'Ej. sin cebollita, salsa aparte'}">${esc(prev?prev.nota:'')}</textarea>
     <div class="acts"><button class="btn ghost" id="x">Cancelar</button><button class="btn main" id="ok"></button></div>`);
   const linea=()=>({id:m.id,q,nota:$('#nota').value.trim(),...(grupos.length?{sel:JSON.parse(JSON.stringify(sel))}:{})});
+  const chip=(g,k,l,activo,attrs,extraTxt)=>{const off=k&&!libre(g,k);
+    return `<button class="chip" ${attrs} aria-pressed="${activo}" ${off?'disabled':''}>${esc(l)}${extraTxt||''}${off?' · agotado':''}</button>`;};
+  function pintarGrupos(){
+    $('#grupos').innerHTML=grupos.map(g=>{
+      let cuerpo='', cuenta='';
+      if(g.tipo==='piezas'){
+        const pzs=sel[g.k], et=etiquetasPiezas(pzs);
+        const fila=(i,mi)=>`<div class="chips">${g.ops.map(([k,l])=>chip(g,k,l,pzs[i].s[mi]===k,`data-pz="${i}" data-mi="${mi}" data-o="${k}"`)).join('')}</div>`;
+        cuerpo=pzs.map((p,i)=>`<div class="pieza"><div class="pieza-h"><span class="lugar">${esc(et[i])}</span>${p.t==='pollo'?`<div class="modo"><button data-modo="completo" data-pz="${i}" aria-pressed="${p.modo!=='mitad'}">Completo</button><button data-modo="mitad" data-pz="${i}" aria-pressed="${p.modo==='mitad'}">Mitad y mitad</button></div>`:''}</div>
+          ${p.t==='pollo'&&p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${fila(i,0)}<span class="mitad">2ª mitad</span>${fila(i,1)}`:fila(i,0)}</div>`).join('');
+        const ayuda=g.piezas.includes('pollo')?'Sin costo. Cada pollo puede ser completo de un sabor o mitad y mitad.':'Incluye 1 sabor sin costo.';
+        return `<div class="grupo"><div class="grupo-h"><span class="f">${esc(g.t)}</span></div><p class="small">${ayuda}</p>${cuerpo}</div>`;
+      }
+      const s=suma(sel[g.k]);
+      if(modoBotones(g)){
+        const opciones=g.tipo==='opcional'?[['','Adobado'],...g.ops]:g.ops;
+        cuerpo=lugares[g.k].map((v,i)=>`${meta(g)>1?`<span class="lugar">${g.slot} ${i+1}</span>`:''}
+          <div class="chips">${opciones.map(([k,l])=>chip(g,k,l,v===k,`data-l="${g.k}" data-i="${i}" data-o="${k}"`,g.tipo==='opcional'&&k?' +$'+g.precio:'')).join('')}</div>`).join('');
+        if(g.tipo==='opcional'&&s) cuenta=`+${money(s*g.precio)}`;
+      } else if(g.tipo==='multi'){
+        if(!verExtra) return `<button class="abrir-extra" id="verExtra">+ Agregar sabor extra o doble <span>+$${g.precio} c/u</span></button>`;
+        cuerpo=`<div class="chips">${g.ops.map(([k,l])=>chip(g,k,l,!!sel[g.k][k],`data-t="${g.k}" data-o="${k}"`)).join('')}</div>`;
+        if(s) cuenta=`+${money(s*g.precio)}`;
+      } else {
+        const o=sel[g.k];
+        cuenta=g.tipo==='exacto'?`${s} de ${meta(g)}`:g.tipo==='opcional'?(s?`${s} de ${meta(g)} · +${money(s*g.precio)}`:''):(s?`${s} en total`:'');
+        cuerpo=`<div class="sabores">${g.ops.map(([k,l,d])=>{const off=!libre(g,k);
+          return `<div class="sabor ${off?'off':''}"><span>${esc(l)}${off?'<span class="tag">Agotado</span>':''}${d&&!off?`<small>${esc(d)}</small>`:''}</span>${off?'':`<div class="stepper"><button data-g="${g.k}" data-o="${k}" data-d="-1" aria-label="Menos ${esc(l)}">−</button><span>${o[k]||0}</span><button data-g="${g.k}" data-o="${k}" data-d="1" aria-label="Más ${esc(l)}">+</button></div>`}</div>`;}).join('')}</div>`;
+      }
+      const ayuda=g.k==='sab'?(meta(g)>1?'Incluye 2 sabores sin costo. Si quieres uno solo, elige el mismo en los dos.':'Incluye 1 sabor sin costo.'):g.ayuda;
+      const titulo=g.k==='sab'&&meta(g)>1?'Sabores':g.t;
+      return `<div class="grupo"><div class="grupo-h"><span class="f">${esc(titulo)}</span><span class="cuenta">${cuenta}</span></div><p class="small">${esc(ayuda)}</p>${cuerpo}</div>`;
+    }).join('');
+    if($('#verExtra')) $('#verExtra').onclick=()=>{verExtra=true; pintarGrupos();};
+    // Piezas: completo / mitad y mitad, y el sabor de cada parte
+    $$('[data-modo]').forEach(b=>b.onclick=()=>{const p=sel.sab[+b.dataset.pz]; p.modo=b.dataset.modo; if(p.modo==='mitad'&&!p.s[1]) p.s[1]=p.s[0]; if(p.modo==='completo') p.s=[p.s[0]]; sync();});
+    $$('[data-mi]').forEach(b=>b.onclick=()=>{const p=sel.sab[+b.dataset.pz]; p.s[+b.dataset.mi]=b.dataset.o; sync();});
+    // Botones: un sabor por lugar
+    $$('[data-l]').forEach(b=>b.onclick=()=>{const g=grupos.find(x=>x.k===b.dataset.l); lugares[g.k][+b.dataset.i]=b.dataset.o; deLugares(g); sync();});
+    // Sabores extra: se prenden y apagan
+    $$('[data-t]').forEach(b=>b.onclick=()=>{const o=sel[b.dataset.t], k=b.dataset.o; if(o[k]) delete o[k]; else o[k]=1; sync();});
+    // Con + y −
+    $$('[data-g]').forEach(b=>b.onclick=()=>{
+      const g=grupos.find(x=>x.k===b.dataset.g), o=sel[g.k], k=b.dataset.o, d=+b.dataset.d;
+      if(d>0){
+        if(g.tipo==='exacto'){ // al subir uno, se le quita a otro para mantener el total
+          if(suma(o)>=meta(g)){const otro=Object.keys(o).find(x=>x!==k&&o[x]>0); if(!otro) return; o[otro]--; if(!o[otro]) delete o[otro];}
+        } else if(g.tipo==='opcional'){ if(suma(o)>=meta(g)) return; }
+        else if(suma(o)>=40) return;
+        o[k]=(o[k]||0)+1;
+      } else if(o[k]){ o[k]--; if(!o[k]) delete o[k]; }
+      sync();
+    });
+  }
   function sync(){
     if(porCantidad) q=suma(sel[grupos[0].k]); else { ajustar(); $('#q').textContent=q; }
+    pintarGrupos();
     let falta='';
-    grupos.forEach(g=>{
-      const o=sel[g.k], s=suma(o);
-      g.ops.forEach(([k])=>{const e=$(`[data-v="${g.k}-${k}"]`); if(e) e.textContent=o[k]||0;});
-      const c=$(`[data-cuenta="${g.k}"]`);
-      if(g.tipo==='exacto'){ c.textContent=`${s} de ${g.por*q}`; if(s<g.por*q) falta=`Elige ${g.por*q-s} ${g.k==='ref'?'refresco(s)':'sabor(es)'} más`; }
-      if(g.tipo==='opcional') c.textContent=s?`${s} de ${g.por*q} · +${money(s*g.precio)}`:'';
-      if(g.tipo==='cantidad') c.textContent=s?`${s} en total`:'';
-    });
+    grupos.forEach(g=>{ if(g.tipo==='piezas'&&sel[g.k].some(p=>!p.s[0]||(p.modo==='mitad'&&!p.s[1]))) falta='Elige el sabor de tu pollo'; if(g.tipo==='exacto'&&suma(sel[g.k])<meta(g)) falta=`Elige ${meta(g)-suma(sel[g.k])} ${g.k==='ref'?'refresco(s)':'sabor(es)'} más`; });
     if(esFlauta) $('#desg').textContent=q+' '+(q>1?'flautas':'flauta')+': '+desgloseFlautas(q);
     if(!q) falta='Elige al menos un sabor';
     $('#ok').disabled=!!falta;
     $('#ok').textContent=falta||`${prev?'Guardar cambios':'Agregar'} · ${money(precioLinea(linea()))}`;
   }
-  $$('[data-g]').forEach(b=>b.onclick=()=>{
-    const g=grupos.find(x=>x.k===b.dataset.g), o=sel[g.k], k=b.dataset.o, d=+b.dataset.d;
-    if(d>0){
-      if(g.tipo==='exacto'){ // al subir un sabor, se le quita uno a otro para mantener el total
-        if(suma(o)>=g.por*q){const otro=Object.keys(o).find(x=>x!==k&&o[x]>0); if(!otro) return; o[otro]--; if(!o[otro]) delete o[otro];}
-      } else if(g.tipo==='opcional'){ if(suma(o)>=g.por*q) return; }
-      else if(suma(o)>=40) return;
-      o[k]=(o[k]||0)+1;
-    } else if(o[k]){ o[k]--; if(!o[k]) delete o[k]; }
-    sync();
-  });
   if(!porCantidad){
     $('#mn').onclick=()=>{if(q>1){q--;sync();}};
     $('#pl').onclick=()=>{if(q<60){q++;sync();}};

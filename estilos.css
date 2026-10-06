@@ -225,3 +225,24 @@ details.prev summary{cursor:pointer;margin-top:18px;font-weight:700}
 .top .wa-mini{display:inline-flex;align-items:center;gap:6px}
 .top .wa-mini svg{color:#2FD27A}
 @media (max-width:480px){.top .wrap{gap:8px}.top .wa-mini{padding:7px}.top .wa-mini span{display:none}.marca svg{width:28px;height:33px}}
+
+/* Elección con botones (un sabor por lugar) */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--ceniza);background:var(--carbon);color:var(--hueso);border-radius:999px;padding:8px 13px;font-size:15px;font-weight:600}
+.chip[aria-pressed="true"]{border-color:var(--naranja);background:var(--naranja);color:var(--carbon)}
+.chip:disabled{opacity:.4;text-decoration:line-through;cursor:not-allowed}
+.lugar{display:block;font-family:var(--label);text-transform:uppercase;letter-spacing:.08em;font-size:13px;font-weight:700;color:var(--humo);margin:12px 0 6px}
+.grupo .chips{margin-top:2px}
+.tip{margin:14px 0 0;font-size:14px;color:var(--hueso);background:var(--brasa-2);border-left:3px solid var(--ambar);border-radius:6px;padding:8px 12px}
+section .tip{margin:0 0 12px}
+.abrir-extra{width:100%;margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:transparent;border:1.5px dashed var(--ceniza);border-radius:10px;padding:12px 14px;color:var(--hueso);font-weight:700;text-align:left}
+.abrir-extra span{color:var(--ambar);font-weight:600;font-size:14px;white-space:nowrap}
+
+/* Sabor por pieza: completo o mitad y mitad */
+.pieza{background:var(--carbon);border:1px solid var(--ceniza);border-radius:12px;padding:10px 12px 12px;margin-top:10px}
+.pieza-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.pieza-h .lugar{margin:0;color:var(--hueso);font-size:15px}
+.modo{display:inline-flex;background:var(--brasa-2);border-radius:999px;padding:3px}
+.modo button{border:0;background:transparent;color:var(--humo);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+.modo button[aria-pressed="true"]{background:var(--hueso);color:var(--carbon)}
+.mitad{display:block;font-size:13px;font-weight:700;color:var(--ambar);margin:8px 0 6px}
