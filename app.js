@@ -31,7 +31,7 @@ const PICO=[14*60,15*60+30];
 const ULTIMO={recoge:ULTIMO_PEDIDO, domicilio:ULTIMO_PEDIDO};
 // Costillas y arrachera tardan 30–45 min: con carne el mínimo sube a 30 min (recoger) y 65 min (domicilio)
 const CARNES=['costillas','arrachera'];
-const CARNE_MIN={recoge:30,domicilio:60};
+const CARNE_MIN={recoge:30,domicilio:50};
 const hayCarne=()=>CART.some(c=>CARNES.includes(c.id));
 const margen=m=>hayCarne()?CARNE_MIN[m]:MARGEN[m];
 const HORA_MAX=m=>Math.min(ULTIMO_PEDIDO+margen(m),CIERRA);   // sin carne: recoger 5:30 pm · domicilio 5:50 pm
@@ -521,7 +521,8 @@ function abrirItem(m,idx){
 }
 
 // ===== Horario del pedido =====
-const horaMinima=()=>Math.max(ahora().min+margen(FORM.modo),SERV_INI);
+// Solo pollo: desde las 12:15 (o ahora + 15/35 min). Con carne: siempre se suman 30/50 min, también al inicio del servicio (12:45 / 1:05 pm)
+const horaMinima=()=>hayCarne()?Math.max(ahora().min,SERV_INI)+margen(FORM.modo):Math.max(ahora().min+margen(FORM.modo),SERV_INI);
 function horaInvalida(){
   if(!FORM.hora) return '';
   const [H,M]=FORM.hora.split(':').map(Number), elegida=H*60+M, min=horaMinima();
@@ -586,7 +587,7 @@ function abrirCarrito(){
     ${lineas||'<p class="sub">Aún no agregas nada.</p>'}
     <div class="total"><span id="lblTotal">Total</span><b>${money(total())}</b></div>
     <span class="f">¿Cómo lo quieres?</span>
-    <div class="seg"><button class="opt" data-m="recoge"><b>Paso a recoger</b><span>${hayCarne()?'Con carne: 30 a 45 min':'Listo en 10 a 25 min'}</span></button><button class="opt" data-m="domicilio"><b>A domicilio</b><span>${hayCarne()?'Con carne: hasta 60 min':'30 a 45 min'} · envío ${ENVIO.replace(' según la zona','')}</span></button></div>
+    <div class="seg"><button class="opt" data-m="recoge"><b>Paso a recoger</b><span>${hayCarne()?'Con carne: 30 a 45 min':'Listo en 10 a 25 min'}</span></button><button class="opt" data-m="domicilio"><b>A domicilio</b><span>${hayCarne()?'Con carne: 50 a 60 min':'30 a 45 min'} · envío ${ENVIO.replace(' según la zona','')}</span></button></div>
     <p class="pico" id="pico" hidden></p>
     <label class="f" for="fn" id="lblNombre"></label><input type="text" id="fn" autocomplete="name">
     <div id="boxDom">
