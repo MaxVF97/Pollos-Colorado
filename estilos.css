@@ -1,3 +1,4 @@
+[hidden]{display:none!important}
 /* Layout: una columna de carta oscura (como los pósters de la marca), barra de categorías fija arriba, carrito fijo abajo */
 :root{
   --carbon:#120E0B; --brasa:#1D1712; --brasa-2:#271F18; --ceniza:#3A2F26;
@@ -290,3 +291,9 @@ section .tip{margin:0 0 12px}
 .galeria{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .galeria div{aspect-ratio:2/1;border-radius:10px;background:var(--brasa-2) center/cover no-repeat;max-width:100%}
 @media (max-width:560px){.galeria{grid-template-columns:1fr}}
+
+/* Encabezado fijo del carrito con botón de cerrar */
+.sheet-h{position:sticky;top:-20px;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-20px -16px 6px;padding:16px 16px 12px;background:var(--brasa);border-bottom:1px solid var(--ceniza)}
+.sheet-h h3{margin:0}
+.cerrar-x{flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--ceniza);background:var(--carbon);color:var(--hueso);display:grid;place-items:center}
+.cerrar-x:hover{border-color:var(--naranja);color:var(--naranja)}

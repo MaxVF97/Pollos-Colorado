@@ -563,7 +563,7 @@ function abrirCarrito(){
   const lineas=CART.map((c,i)=>{const m=byId(c.id); const sin=faltantes(m); const conGrupos=!!(m.g&&m.g.length);
     return `<div class="linea"><div class="t"><b>${c.q>1?c.q+' × ':''}${esc(m.n)}</b>${m.s&&m.sec!=='pollos'?`<i>${esc(m.s)}</i>`:''}${detalles(c).map(([k,v])=>`<i>${esc(k)}: ${esc(v)}</i>`).join('')}${c.nota?`<i>Nota: ${esc(c.nota)}</i>`:''}${sin.length?`<span class="w">Hoy sin ${esc(sin.join(', ').toLowerCase())}</span>`:''}</div>
       <div class="r"><strong>${money(precioLinea(c))}</strong>${conGrupos?`<div class="mini"><button data-ed="${i}">Editar</button><button data-rm="${i}">Quitar</button></div>`:`<div class="stepper"><button data-mn="${i}" aria-label="Quitar uno">−</button><span>${c.q}</span><button data-pl="${i}" aria-label="Agregar uno">+</button></div>`}</div></div>`;}).join('');
-  abrir(`<h3>Tu pedido</h3>
+  abrir(`<div class="sheet-h"><h3>Tu pedido</h3><button class="cerrar-x" id="cerrarX" aria-label="Cerrar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     ${lineas||'<p class="sub">Aún no agregas nada.</p>'}
     <div class="total"><span id="lblTotal">Total</span><b>${money(total())}</b></div>
     <span class="f">¿Cómo lo quieres?</span>
@@ -603,6 +603,7 @@ function abrirCarrito(){
   $$('[data-pl]').forEach(b=>b.onclick=()=>{CART[+b.dataset.pl].q++; guardar(); refrescarTodo();});
   $$('[data-rm]').forEach(b=>b.onclick=()=>{CART.splice(+b.dataset.rm,1); guardar(); refrescarTodo();});
   $$('[data-ed]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ed; cerrar(); abrirItem(byId(CART[i].id),i);});
+  $('#cerrarX').onclick=cerrar;
   $('#copiarTarjeta').onclick=()=>copiarTexto(BANCO.tarjeta.replace(/\s/g,''),$('#copiarTarjeta'),'Copiar',$('#numTarjeta'));
   $('#x').onclick=cerrar;
   function pintarPagos(){
