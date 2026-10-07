@@ -41,7 +41,7 @@ const IMG=new Proxy({},{get:(_,k)=>`${String(k)}.webp`});
 // ===== Productos agotados =====
 // Se leen de una hoja de Google. Mientras SHEET_ID esté vacío, todo aparece disponible.
 // La hoja debe llamarse "Agotados" y tener columnas: id | producto | agotado (casilla)
-const SHEET_ID='';
+const SHEET_ID='1Np9aXL6YgoKA_iZIlucSgJW1rGa2JuQoLPkw_dn5e_o';
 const OFF=new Set();
 
 // ===== Sabores del pollo =====
