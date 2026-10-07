@@ -29,7 +29,12 @@ const MARGEN={recoge:15,domicilio:35};
 const PICO=[14*60,15*60+30];
 // Último pedido del día y última hora que se puede programar (último pedido + su margen)
 const ULTIMO={recoge:ULTIMO_PEDIDO, domicilio:ULTIMO_PEDIDO};
-const HORA_MAX=m=>ULTIMO_PEDIDO+MARGEN[m];   // recoger 5:30 pm · domicilio 5:50 pm
+// Costillas y arrachera tardan 30–45 min: con carne el mínimo sube a 30 min (recoger) y 65 min (domicilio)
+const CARNES=['costillas','arrachera'];
+const CARNE_MIN={recoge:30,domicilio:60};
+const hayCarne=()=>CART.some(c=>CARNES.includes(c.id));
+const margen=m=>hayCarne()?CARNE_MIN[m]:MARGEN[m];
+const HORA_MAX=m=>Math.min(ULTIMO_PEDIDO+margen(m),CIERRA);   // sin carne: recoger 5:30 pm · domicilio 5:50 pm
 
 // ===== Entregas =====
 const CIUDADES=['Colima','Villa de Álvarez','Coquimatlán'];
@@ -77,7 +82,8 @@ const SABOR_EXTRA=25;
 const REFRESCOS=[['coca15','Coca-Cola',''],['sidral15','Sidral Mundet','']];
 
 // Lo que el dueño puede marcar como agotado en la hoja
-const INSUMOS={arroz:'Arroz',salsa:'Salsa tradicional',tortillas:'Tortillas',cebollita:'Cebollita',chile:'Chile toreado',totopos:'Totopos',flautas:'Flautas',papas:'Papas',sopa:'Sopa de codito',ensalada:'Ensalada',frijoles:'Frijoles de la olla',limon:'Limón',coca15:'Coca-Cola 1.5 L',sidral15:'Sidral Mundet 1.5 L',coca450:'Coca-Cola 450 ml'};
+const CORTES={'Pierna y muslo':'pza-piernamuslo','Ala y pechuga':'pza-alapechuga'};
+const INSUMOS={pollo:'Pollo','pza-piernamuslo':'Pierna y muslo','pza-alapechuga':'Ala y pechuga',arroz:'Arroz',salsa:'Salsa tradicional',tortillas:'Tortillas',cebollita:'Cebollita',chile:'Chile toreado',totopos:'Totopos',flautas:'Flautas',papas:'Papas',sopa:'Sopa de codito',ensalada:'Ensalada',frijoles:'Frijoles de la olla',limon:'Limón',coca15:'Coca-Cola 1.5 L',sidral15:'Sidral Mundet 1.5 L',coca450:'Coca-Cola 450 ml'};
 SABORES.forEach(([k,l])=>INSUMOS['sab-'+k]='Sabor '+l);
 // Disponibilidad de una opción o insumo ("ref15" = cualquier refresco grande)
 const apagado=k=>k==='ref15' ? (OFF.has('coca15')&&OFF.has('sidral15')) : OFF.has(k);
@@ -99,17 +105,17 @@ const gRef=n=>({k:'ref',t:n>1?'Refrescos grandes':'Refresco grande',ops:REFRESCO
 
 const BASE=[['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['cebollita','Cebollita'],['chile','Chile toreado'],['totopos','Totopos']];
 const MENU=[
- {id:'cuarto',sec:'pollos',n:'1/4 Pollo',p:75,img:'cuarto',inc:BASE,g:[gSab(['cuarto']),gExtra]},
- {id:'medio',sec:'pollos',n:'1/2 Pollo',p:125,img:'medio',inc:BASE,g:[gSab(['medio']),gExtra]},
- {id:'entero',sec:'pollos',n:'1 Pollo',p:235,img:'entero',inc:BASE,g:[gSab(['pollo']),gExtra]},
- {id:'p1',sec:'paquetes',n:'Paquete 1',s:'1/4 de pollo',p:105,img:'p1',inc:[['','1/4 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','3 flautas'],['coca450','Coca-Cola chica'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['cuarto']),gExtra]},
- {id:'p2',sec:'paquetes',n:'Paquete 2',s:'1/2 de pollo',p:149,img:'medio',inc:[['','1/2 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['papas','1/2 orden de papa'],['coca450','Coca-Cola chica']],g:[gSab(['medio']),gExtra]},
- {id:'p3',sec:'paquetes',n:'Paquete 3',s:'1 pollo',p:279,img:'p3',inc:[['','1 pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','5 flautas'],['ensalada','Ensalada'],['ref15','1 refresco grande']],g:[gSab(['pollo']),gExtra,gRef(1)]},
- {id:'p4',sec:'paquetes',n:'Paquete 4',s:'1 pollo y 1/2',p:365,img:'p4',inc:[['','1 pollo y 1/2'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['sopa','1 sopa de codito'],['papas','1 orden de papas']],g:[gSab(['pollo','medio']),gExtra]},
- {id:'p5',sec:'paquetes',n:'Paquete 5',s:'3 pollos',p:695,img:'p5',inc:[['','3 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','2 refrescos grandes'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['pollo','pollo','pollo']),gExtra,gRef(2)]},
- {id:'viernes',sec:'viernes',n:'Promoción de viernes',s:'2 pollos',p:449,img:'viernes',inc:[['','2 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','1 refresco grande']],g:[gSab(['pollo','pollo']),gExtra,gRef(1)]},
- {id:'costillas',sec:'costillas',n:'Costillas',s:'1 kg de costilla',p:290,img:'costillas',inc:[['','1 kg de costilla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebollita'],['chile','Chile toreado'],['papas','Orden de papas cambray'],['limon','Limón']],g:[gSabCostilla]},
- {id:'arrachera',sec:'arrachera',n:'Arrachera texana',s:'Lo más premium del menú',p:320,img:'arrachera',inc:[['','1 kg de arrachera'],['frijoles','Frijoles de la olla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebolla'],['chile','Chile toreado'],['limon','Limón']]},
+ {id:'cuarto',base:'pollo',sec:'pollos',n:'1/4 Pollo',p:75,img:'cuarto',inc:BASE,g:[gSab(['cuarto']),gExtra]},
+ {id:'medio',base:'pollo',sec:'pollos',n:'1/2 Pollo',p:125,img:'medio',inc:BASE,g:[gSab(['medio']),gExtra]},
+ {id:'entero',base:'pollo',sec:'pollos',n:'1 Pollo',p:235,img:'entero',inc:BASE,g:[gSab(['pollo']),gExtra]},
+ {id:'p1',base:'pollo',sec:'paquetes',n:'Paquete 1',s:'1/4 de pollo',p:105,img:'p1',inc:[['','1/4 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','3 flautas'],['coca450','Coca-Cola chica'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['cuarto']),gExtra]},
+ {id:'p2',base:'pollo',sec:'paquetes',n:'Paquete 2',s:'1/2 de pollo',p:149,img:'medio',inc:[['','1/2 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['papas','1/2 orden de papa'],['coca450','Coca-Cola chica']],g:[gSab(['medio']),gExtra]},
+ {id:'p3',base:'pollo',sec:'paquetes',n:'Paquete 3',s:'1 pollo',p:279,img:'p3',inc:[['','1 pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','5 flautas'],['ensalada','Ensalada'],['ref15','1 refresco grande']],g:[gSab(['pollo']),gExtra,gRef(1)]},
+ {id:'p4',base:'pollo',sec:'paquetes',n:'Paquete 4',s:'1 pollo y 1/2',p:365,img:'p4',inc:[['','1 pollo y 1/2'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['sopa','1 sopa de codito'],['papas','1 orden de papas']],g:[gSab(['pollo','medio']),gExtra]},
+ {id:'p5',base:'pollo',sec:'paquetes',n:'Paquete 5',s:'3 pollos',p:695,img:'p5',inc:[['','3 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','2 refrescos grandes'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['pollo','pollo','pollo']),gExtra,gRef(2)]},
+ {id:'viernes',base:'pollo',sec:'viernes',n:'Promoción de viernes',s:'2 pollos',p:449,img:'viernes',inc:[['','2 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','1 refresco grande']],g:[gSab(['pollo','pollo']),gExtra,gRef(1)]},
+ {id:'costillas',sec:'costillas',n:'Costillas',s:'1 kg de costilla',p:290,media:150,img:'costillas',inc:[['','1 kg de costilla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebollita'],['chile','Chile toreado'],['papas','Orden de papas cambray'],['limon','Limón']],g:[gSabCostilla]},
+ {id:'arrachera',sec:'arrachera',n:'Arrachera texana',s:'Lo más premium del menú',p:320,media:160,img:'arrachera',inc:[['','1 kg de arrachera'],['frijoles','Frijoles de la olla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebolla'],['chile','Chile toreado'],['limon','Limón']]},
  {id:'flautas',sec:'extras',n:'Flautas',d:'$8 c/u · cada 5 por $35',p:8,img:'flautas'},
  {id:'arroz',sec:'extras',n:'Arroz',d:'Orden',p:20,img:'arroz'},
  {id:'salsa',sec:'extras',n:'Salsa tradicional',d:'La de la casa',p:15,img:'salsa'},
@@ -155,15 +161,15 @@ function estado(modo){
 
 const VIERNES=ahora().dia===5;
 const PICO_AHORA=()=>{const m=ahora().min;return m>=PICO[0]&&m<PICO[1];};
-const disponible=m=>!OFF.has(m.id) && (m.id!=='viernes'||VIERNES) && (m.id!=='refgrande'||!apagado('ref15'));
+const disponible=m=>!OFF.has(m.id) && !(m.base&&OFF.has(m.base)) && (m.id!=='viernes'||VIERNES) && (m.id!=='refgrande'||!apagado('ref15'));
 const faltantes=m=>(m.inc||[]).filter(([k])=>k&&apagado(k)).map(([,l])=>l);
 
 // ===== Precios =====
 // Flautas: cada 5 por $35 y las sueltas a $8
-const precio=(m,q)=>m.id==='flautas' ? Math.floor(q/5)*35+(q%5)*8 : m.p*q;
+const precio=(m,q,media)=>m.id==='flautas' ? Math.floor(q/5)*35+(q%5)*8 : (media&&m.media?m.media:m.p)*q;
 const suma=o=>Object.values(o||{}).reduce((a,n)=>a+n,0);
 function precioLinea(c){
-  const m=byId(c.id); let t=precio(m,c.q);
+  const m=byId(c.id); let t=precio(m,c.q,c.media);
   (m.g||[]).forEach(g=>{ if(g.precio) t+=suma(c.sel&&c.sel[g.k])*g.precio; });
   return t;
 }
@@ -192,6 +198,7 @@ function textoPieza(p){
 }
 function detalles(c){
   const m=byId(c.id), d=[];
+  if(m.media) d.push(['Tamaño',c.media?'Media orden':'Orden completa']);
   (m.g||[]).forEach(g=>{
     const o=c.sel&&c.sel[g.k];
     if(g.tipo==='piezas'){ if(Array.isArray(o)){ const et=etiquetasPiezas(o); o.forEach((p,i)=>d.push([et[i],textoPieza(p)])); } return; }
@@ -218,6 +225,7 @@ const IC={
  carrito:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2.2l2.3 10.4a1.6 1.6 0 0 0 1.6 1.3h7.7a1.6 1.6 0 0 0 1.5-1.1L20.5 8H6.1"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg>',
  pin:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
  wa:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.6 11.6 0 0 0 4.4 3.9c1.6.7 2.3.8 3.1.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3z"/></svg>',
+ arena:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="#D9D2C7" stroke-width="1.6" stroke-linecap="round" d="M6 3h12M6 21h12M7.5 3c0 4.5 4.5 6 4.5 9s-4.5 4.5-4.5 9M16.5 3c0 4.5-4.5 6-4.5 9s4.5 4.5 4.5 9"/><path fill="#F5B83D" d="M9.2 6.6h5.6c-.6 1.6-2 2.6-2.8 3.3-.8-.7-2.2-1.7-2.8-3.3zM8.4 20c.4-2.4 2.4-3.6 3.6-4.4 1.2.8 3.2 2 3.6 4.4z"/><path stroke="#F5B83D" stroke-width="1" d="M12 12v3"/></svg>',
  reloj:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
 };
 
@@ -231,13 +239,15 @@ function notaSabor(m){
 function card(m,wide){
   const ok=disponible(m), sin=faltantes(m), n=enCarrito(m.id);
   const cerradoViernes=m.id==='viernes'&&!VIERNES&&!OFF.has(m.id);
-  const sello=OFF.has(m.id)?'<span class="sello">Agotado</span>':(cerradoViernes?'<span class="sello" style="color:var(--ambar);border-color:var(--ambar)">Solo viernes</span>':'');
+  const sello=(OFF.has(m.id)||(m.base&&OFF.has(m.base)))?'<span class="sello">Agotado</span>':(cerradoViernes?'<span class="sello" style="color:var(--ambar);border-color:var(--ambar)">Solo viernes</span>':'');
   return `<article class="card ${wide?'wide':''} ${ok?'':'off'}">
     <div class="ph" style="background-image:url(${IMG[m.img]})${m.fit?';background-size:contain;background-color:#050505':''}">${sello}<span class="precio">${money(m.p)}</span></div>
     <div class="body">
       <h3>${esc(m.n)}${m.s?`<small>${esc(m.s)}</small>`:''}</h3>
       <ul class="inc" aria-label="Incluye">${(m.inc||[]).map(([k,l])=>`<li class="${k&&apagado(k)?'sin':''}">${esc(l)}</li>`).join('')}</ul>
       ${notaSabor(m)}
+      ${CARNES.includes(m.id)?`<p class="nota-tiempo">${IC.arena} Toma de 30 a 45 min · pide con anticipación</p>`:''}
+      ${m.media?`<p class="nota-media">También en <b>media orden: ${money(m.media)}</b></p>`:''}
       ${sin.length&&ok?`<p class="nota-sin">Hoy sin ${esc(sin.join(', ').toLowerCase())}</p>`:''}
       ${cerradoViernes?'<p class="cerrado">Disponible cada viernes</p>':''}
       <button class="add" data-add="${m.id}" ${ok?'':'disabled aria-disabled="true"'}>${ok?'Agregar':(cerradoViernes?'Vuelve el viernes':'Agotado')}${n?`<span class="n">${n} en tu pedido</span>`:''}</button>
@@ -292,7 +302,7 @@ function render(){
   </div>
   <main class="wrap">
     ${sec('pollos','Pollos','Todos incluyen arroz, salsa, tortillas, cebollita, chile toreado y totopos. Cada medio pollo incluye un sabor a elegir.',`<div class="sab-banner" style="background-image:url(${IMG.pcrudo})"><span>Al carbón desde temprano</span></div><div class="grid">${MENU.filter(m=>m.sec==='pollos').map(m=>card(m)).join('')}</div>`)}
-    ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<div class="sab-banner" style="background-image:url(${IMG.sabores})"><span>11 sabores, bañados al carbón</span></div><p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="leyenda"><span>${IC_SAB.salado} Salado</span><span>${IC_SAB.flama} Picante</span><span>${IC_SAB.dulce} Dulce</span><span>${IC_SAB.dulce}${IC_SAB.acido} Agridulce</span></div><div class="sabores-lista">${SABORES.map(([k,l,d,t])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}</b><div class="fila-nivel">${nivelSabor(t)}${apagado('sab-'+k)?'<span class="tag">Agotado</span>':''}</div><span>${esc(d)}</span></div>`).join('')}</div>`)}
+    ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<div class="sab-banner" style="background-image:url(${IMG.sabores})"><span>11 sabores, bañados al carbón</span></div><p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="leyenda"><span>${IC.arena} Mayor tiempo de espera</span><span>${IC_SAB.salado} Salado</span><span>${IC_SAB.flama} Picante</span><span>${IC_SAB.dulce} Dulce</span><span>${IC_SAB.dulce}${IC_SAB.acido} Agridulce</span></div><div class="sabores-lista">${SABORES.map(([k,l,d,t])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}</b><div class="fila-nivel">${nivelSabor(t)}${apagado('sab-'+k)?'<span class="tag">Agotado</span>':''}</div><span>${esc(d)}</span></div>`).join('')}</div>`)}
     ${sec('paquetes','Paquetes','Para compartir en familia. Eliges los sabores al agregarlo.',`<div class="grid">${MENU.filter(m=>m.sec==='paquetes').map(m=>card(m)).join('')}</div>`)}
     ${sec('viernes','Promo de viernes',VIERNES?'Solo hoy.':'Se puede pedir únicamente los viernes.',card(byId('viernes'),true))}
     ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. El sabor se agrega aparte.',card(byId('costillas'),true)+`<div class="sab-banner" style="background-image:url(${IMG.costcharola});margin-top:14px"><span>Jugosas, directo de la brasa</span></div>`)}
@@ -357,7 +367,11 @@ function barra(pulso){
 }
 
 // ===== Hojas deslizables =====
-function abrir(html){$('#sheet').innerHTML=html;$('#veil').classList.add('open');document.body.style.overflow='hidden';}
+const X_SVG='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+function abrir(html){
+  if(!html.includes('cerrarX')) html=`<div class="x-flot"><button class="cerrar-x" id="cerrarX" aria-label="Cerrar">${X_SVG}</button></div>`+html;
+  $('#sheet').innerHTML=html; $('#sheet').scrollTop=0;
+  $('#cerrarX').onclick=()=>{ const x=$('#x'); if(x) x.click(); else cerrar(); };$('#veil').classList.add('open');document.body.style.overflow='hidden';}
 function cerrar(){$('#veil').classList.remove('open');document.body.style.overflow=''; if(pendiente){pendiente=false; refrescarCarta();}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrar();});
 
@@ -368,6 +382,8 @@ function abrirItem(m,idx){
   const porCantidad=grupos.some(g=>g.tipo==='cantidad');   // salsas: la cantidad sale de los sabores
   const esFlauta=m.id==='flautas';
   let q=prev?prev.q:1;
+  let media=!!(prev&&prev.media);
+  const esCarne=CARNES.includes(m.id);
   const sel={}; grupos.forEach(g=>{ const v=prev&&prev.sel&&prev.sel[g.k]; sel[g.k]=g.tipo==='piezas'?(Array.isArray(v)?JSON.parse(JSON.stringify(v)):[]):Object.assign({},v||{}); });
   const libre=(g,k)=>disponibleOp(g,k);
   const primeraLibre=g=>(g.ops.find(o=>libre(g,o[0]))||[])[0];
@@ -386,6 +402,7 @@ function abrirItem(m,idx){
       if(g.tipo==='piezas'){ // una pieza por cada pollo / medio / cuarto según la cantidad
         const tipos=[]; for(let i=0;i<q;i++) tipos.push(...g.piezas);
         sel[g.k]=tipos.map((t,i)=>o[i]&&o[i].t===t?o[i]:{t,modo:'completo',s:[def]});
+        sel[g.k].forEach(p=>{ if(p.corte&&OFF.has(CORTES[p.corte])) p.corte=''; });
         return;
       }
       if(g.tipo==='exacto'){
@@ -407,7 +424,9 @@ function abrirItem(m,idx){
   abrir(`${m.img?`<div class="ph" style="background-image:url(${IMG[m.img]})${blanco?';background-size:contain;background-color:#fff':m.fit?';background-size:contain;background-color:#050505;aspect-ratio:1/1':''}"></div>`:''}
     <h3>${esc(m.n)}</h3>
     <p class="sub">${sub}</p>
-    ${sin.length?`<p class="nota-sin" style="margin-top:8px">Hoy no tenemos ${esc(sin.join(', ').toLowerCase())}.</p>`:''}
+    ${sin.length?`<p class="aviso-falta"><b>Hoy no tenemos ${esc(sin.join(', ').toLowerCase())}.</b> Si continúas, tu pedido va sin eso.</p>`:''}
+    ${esCarne?'<p class="tip con-ic">'+IC.arena+' La carne tarda de 30 a 45 min en estar lista. Te sugerimos pedir con anticipación.</p>':''}
+    ${m.media?`<span class="f">Tamaño</span><div class="seg"><button class="opt" data-media="0"><b>Orden completa</b><span>${money(m.p)}</span></button><button class="opt" data-media="1"><b>Media orden</b><span>${money(m.media)} · incluye lo mismo</span></button></div>`:''}
     ${porCantidad?'':`<span class="f">Cantidad</span>
     <div class="stepper"><button id="mn" aria-label="Menos">−</button><span id="q"></span><button id="pl" aria-label="Más">+</button></div>`}
     ${esFlauta?'<p class="small" id="desg"></p><p class="small">Cada grupo de 5 flautas cuesta $35; las sueltas, $8 cada una.</p>':''}
@@ -416,7 +435,7 @@ function abrirItem(m,idx){
     <label class="f" for="nota">¿Alguna indicación? <small>(opcional)</small></label>
     <textarea id="nota" placeholder="${blanco?'Ej. bien fría':tieneSabor?'Ej. salsa aparte, bien doradito':'Ej. sin cebollita, salsa aparte'}">${esc(prev?prev.nota:'')}</textarea>
     <div class="acts"><button class="btn ghost" id="x">Cancelar</button><button class="btn main" id="ok"></button></div>`);
-  const linea=()=>({id:m.id,q,nota:$('#nota').value.trim(),...(grupos.length?{sel:JSON.parse(JSON.stringify(sel))}:{})});
+  const linea=()=>({id:m.id,q,...(m.media?{media}:{}),nota:$('#nota').value.trim(),...(grupos.length?{sel:JSON.parse(JSON.stringify(sel))}:{})});
   const chip=(g,k,l,activo,attrs,extraTxt)=>{const off=k&&!libre(g,k);
     return `<button class="chip" ${attrs} aria-pressed="${activo}" ${off?'disabled':''}>${esc(l)}${extraTxt||''}${off?' · agotado':''}</button>`;};
   function pintarGrupos(){
@@ -427,7 +446,7 @@ function abrirItem(m,idx){
         const fila=(i,mi)=>`<div class="chips">${g.ops.map(([k,l])=>chip(g,k,l,pzs[i].s[mi]===k,`data-pz="${i}" data-mi="${mi}" data-o="${k}"`)).join('')}</div>`;
         cuerpo=pzs.map((p,i)=>`<div class="pieza"><div class="pieza-h"><span class="lugar">${esc(et[i])}</span>${p.t==='pollo'?`<div class="modo"><button data-modo="completo" data-pz="${i}" aria-pressed="${p.modo!=='mitad'}">Completo</button><button data-modo="mitad" data-pz="${i}" aria-pressed="${p.modo==='mitad'}">Mitad y mitad</button></div>`:''}</div>
           ${p.t==='pollo'&&p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${fila(i,0)}<span class="mitad">2ª mitad</span>${fila(i,1)}`:fila(i,0)}
-          ${p.t==='cuarto'?`<span class="mitad">¿Qué pieza prefieres? <small>(opcional)</small></span><div class="chips">${['','Pierna y muslo','Ala y pechuga'].map(c=>`<button class="chip" data-corte="${c}" data-pz="${i}" aria-pressed="${(p.corte||'')===c}">${c||'Me da igual'}</button>`).join('')}</div>`:''}</div>`).join('');
+          ${p.t==='cuarto'?`<span class="mitad">¿Qué pieza prefieres? <small>(opcional)</small></span><div class="chips">${['','Pierna y muslo','Ala y pechuga'].map(c=>{const off=c&&OFF.has(CORTES[c]); return `<button class="chip" data-corte="${c}" data-pz="${i}" aria-pressed="${(p.corte||'')===c}" ${off?'disabled':''}>${c||'Me da igual'}${off?' · agotado':''}</button>`;}).join('')}</div>`:''}</div>`).join('');
         const ayuda=g.piezas.includes('pollo')?'Sin costo. Cada pollo puede ser completo de un sabor o mitad y mitad.':'Incluye 1 sabor sin costo.';
         return `<div class="grupo"><div class="grupo-h"><span class="f">${esc(g.t)}</span></div><p class="small">${ayuda}</p>${cuerpo}</div>`;
       }
@@ -475,14 +494,16 @@ function abrirItem(m,idx){
   }
   function sync(){
     if(porCantidad) q=suma(sel[grupos[0].k]); else { ajustar(); $('#q').textContent=q; }
+    $$('[data-media]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.media==='1')===media));
     pintarGrupos();
     let falta='';
-    grupos.forEach(g=>{ if(g.tipo==='piezas'&&sel[g.k].some(p=>!p.s[0]||(p.modo==='mitad'&&!p.s[1]))) falta='Elige el sabor de tu pollo'; if(g.tipo==='exacto'&&suma(sel[g.k])<meta(g)) falta=`Elige ${meta(g)-suma(sel[g.k])} ${g.k==='ref'?'refresco(s)':'sabor(es)'} más`; });
+    grupos.forEach(g=>{ if(g.tipo==='piezas'&&sel[g.k].some(p=>!p.s[0]||(p.modo==='mitad'&&!p.s[1]))) falta='Elige el sabor de tu pollo'; if(g.tipo==='exacto'&&primeraLibre(g)&&suma(sel[g.k])<meta(g)) falta=`Elige ${meta(g)-suma(sel[g.k])} ${g.k==='ref'?'refresco(s)':'sabor(es)'} más`; });
     if(esFlauta) $('#desg').textContent=q+' '+(q>1?'flautas':'flauta')+': '+desgloseFlautas(q);
     if(!q) falta='Elige al menos un sabor';
     $('#ok').disabled=!!falta;
     $('#ok').textContent=falta||`${prev?'Guardar cambios':'Agregar'} · ${money(precioLinea(linea()))}`;
   }
+  $$('[data-media]').forEach(b=>b.onclick=()=>{media=b.dataset.media==='1'; sync();});
   if(!porCantidad){
     $('#mn').onclick=()=>{if(q>1){q--;sync();}};
     $('#pl').onclick=()=>{if(q<60){q++;sync();}};
@@ -492,7 +513,7 @@ function abrirItem(m,idx){
     const l=linea();
     if(prev) CART[idx]=l;
     else if(grupos.length) CART.push(l);
-    else { const ya=CART.find(c=>c.id===m.id&&c.nota===l.nota&&!c.sel); if(ya) ya.q+=q; else CART.push(l); }
+    else { const ya=CART.find(c=>c.id===m.id&&c.nota===l.nota&&!c.sel&&!!c.media===!!l.media); if(ya) ya.q+=q; else CART.push(l); }
     guardar(); cerrar(); const y=scrollY; render(); scrollTo(0,y); barra(true);
     if(prev) abrirCarrito();
   };
@@ -500,15 +521,13 @@ function abrirItem(m,idx){
 }
 
 // ===== Horario del pedido =====
-const horaMinima=()=>Math.max(ahora().min+MARGEN[FORM.modo],SERV_INI);
+const horaMinima=()=>Math.max(ahora().min+margen(FORM.modo),SERV_INI);
 function horaInvalida(){
   if(!FORM.hora) return '';
   const [H,M]=FORM.hora.split(':').map(Number), elegida=H*60+M, min=horaMinima();
   if(elegida>HORA_MAX(FORM.modo)) return `Lo más tarde que puedes programar ${FORM.modo==='recoge'?'para recoger':'a domicilio'} es a las ${h12(HORA_MAX(FORM.modo))}.`;
   if(elegida<SERV_INI) return `El servicio empieza a las ${h12(SERV_INI)}. Elige las ${h12(min)} o más tarde.`;
-  if(elegida<min) return FORM.modo==='recoge'
-    ? `Para recoger necesitamos al menos 15 min. Elige las ${h12(min)} o más tarde.`
-    : `A domicilio necesitamos al menos 35 min. Elige las ${h12(min)} o más tarde.`;
+  if(elegida<min) return `${FORM.modo==='recoge'?'Para recoger':'A domicilio'} necesitamos al menos ${margen(FORM.modo)} min${hayCarne()?' (tu pedido lleva carne)':''}. Elige las ${h12(min)} o más tarde.`;
   return '';
 }
 function faltaDato(){
@@ -567,7 +586,7 @@ function abrirCarrito(){
     ${lineas||'<p class="sub">Aún no agregas nada.</p>'}
     <div class="total"><span id="lblTotal">Total</span><b>${money(total())}</b></div>
     <span class="f">¿Cómo lo quieres?</span>
-    <div class="seg"><button class="opt" data-m="recoge"><b>Paso a recoger</b><span>Listo en 10 a 25 min</span></button><button class="opt" data-m="domicilio"><b>A domicilio</b><span>30 a 45 min · envío ${ENVIO.replace(' según la zona','')}</span></button></div>
+    <div class="seg"><button class="opt" data-m="recoge"><b>Paso a recoger</b><span>${hayCarne()?'Con carne: 30 a 45 min':'Listo en 10 a 25 min'}</span></button><button class="opt" data-m="domicilio"><b>A domicilio</b><span>${hayCarne()?'Con carne: hasta 60 min':'30 a 45 min'} · envío ${ENVIO.replace(' según la zona','')}</span></button></div>
     <p class="pico" id="pico" hidden></p>
     <label class="f" for="fn" id="lblNombre"></label><input type="text" id="fn" autocomplete="name">
     <div id="boxDom">
@@ -579,7 +598,7 @@ function abrirCarrito(){
       <label class="f" for="ft">Teléfono para el repartidor</label><input type="tel" id="ft" autocomplete="tel" inputmode="tel" placeholder="10 dígitos">
       <p class="small">El costo de envío va de ${ENVIO}; te lo confirmamos por WhatsApp.</p>
     </div>
-    <label class="f" for="fh" id="lblHora"></label><input type="time" id="fh"><p class="small" id="hint"></p>
+    <label class="f" for="fh" id="lblHora"></label><select id="fh" class="sel-hora"></select><p class="small" id="hint"></p><p class="tip con-ic" id="notaCarne" hidden>${IC.arena} Tu pedido lleva carne: tarda de 30 a 45 min. Por eso la hora más próxima es más tarde.</p>
     <span class="f">¿Cómo vas a pagar?</span>
     <div class="seg tres" id="pagos"></div>
     <div id="boxCambio"><label class="f" for="fcb">¿Con cuánto pagas? <small>(opcional, para tu cambio)</small></label><input type="text" id="fcb" inputmode="numeric" placeholder="Ej. 500"></div>
@@ -596,7 +615,7 @@ function abrirCarrito(){
     <div class="acts"><button class="btn ghost" id="x">Seguir viendo</button><a class="btn wa" id="send" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
     <p class="small">Al tocar Enviar se abre WhatsApp con tu pedido ya escrito; solo presiona enviar. Pedidos al ${TEL_VISIBLE}.</p>`);
   const campos={fn:'nombre',fc1:'calle',fc2:'colonia',fr:'ref',ft:'tel',fh:'hora',fcb:'cambio',fco:'coment'};
-  Object.entries(campos).forEach(([id,k])=>{const el=$('#'+id); el.value=FORM[k]; el.oninput=()=>{FORM[k]=el.value; act();};});
+  Object.entries(campos).forEach(([id,k])=>{const el=$('#'+id); el.value=FORM[k]; el.oninput=el.onchange=()=>{FORM[k]=el.value; act();};});
   $$('[data-m]').forEach(b=>b.onclick=()=>{FORM.modo=b.dataset.m; if(FORM.modo==='domicilio'&&FORM.pago==='tarjeta') FORM.pago='efectivo'; act();});
   $$('[data-c]').forEach(b=>b.onclick=()=>{FORM.ciudad=b.dataset.c;act();});
   $$('[data-mn]').forEach(b=>b.onclick=()=>{const c=CART[+b.dataset.mn]; c.q--; if(c.q<1) CART.splice(+b.dataset.mn,1); guardar(); refrescarTodo();});
@@ -626,9 +645,14 @@ function abrirCarrito(){
     $('#lblHora').innerHTML=FORM.modo==='recoge'?'¿A qué hora pasas por él? <small>(opcional)</small>':'¿Para qué hora lo quieres? <small>(opcional)</small>';
     const e=estado(FORM.modo), mn=horaMinima();
     const mx=HORA_MAX(FORM.modo);
-    $('#fh').min=aHHMM(Math.min(mn,mx)); $('#fh').max=aHHMM(mx);
+    // Solo horarios de servicio, cada 15 min, desde la hora más próxima posible
+    const slots=[]; for(let t=Math.ceil(mn/15)*15;t<=mx;t+=15) slots.push(aHHMM(t));
+    if(FORM.hora&&!slots.includes(FORM.hora)) FORM.hora='';
+    $('#fh').innerHTML=`<option value="">${e.antes?`A partir de las ${h12(mn)}`:'Lo antes posible'}</option>`+slots.map(v=>`<option value="${v}">${hora12(v)}</option>`).join('');
+    $('#fh').value=FORM.hora; $('#fh').disabled=!e.abierto;
+    $('#notaCarne').hidden=!hayCarne();
     $('#hint').textContent=!e.abierto?'':mn<=mx
-      ? `Puedes elegir de ${h12(mn)} a ${h12(mx)}. Si la dejas vacía, ${e.antes?`queda para las ${h12(mn)}`:FORM.modo==='recoge'?'te lo tenemos listo lo antes posible':'te lo enviamos lo antes posible'}.`
+      ? `Horarios disponibles de ${h12(Math.ceil(mn/15)*15>mx?mn:Math.ceil(mn/15)*15)} a ${h12(mx)}.`
       : 'Déjala vacía y lo preparamos lo antes posible.';
     $('#pico').hidden=!(e.abierto&&!e.antes&&PICO_AHORA());
     $('#pico').textContent=`Estamos en hora pico (${h12(PICO[0])} a ${h12(PICO[1])}): ${FORM.modo==='recoge'?'tu pedido puede tardar un poco más':'a domicilio puede tardar hasta 60 min'}.`;
@@ -640,7 +664,7 @@ function abrirCarrito(){
     guardar();
   }
   clearInterval(window.__reloj); window.__reloj=setInterval(()=>{ if($('#veil').classList.contains('open')&&$('#hint')) act(); else clearInterval(window.__reloj); },30000);
-  $('#send').addEventListener('click',e=>{ act(); if(faltaDato()) e.preventDefault(); });
+  $('#send').addEventListener('click',e=>{ act(); if(faltaDato()){ e.preventDefault(); return; } try{sessionStorage.setItem('colorado-enviado','1');}catch(_){} });
   function refrescarTodo(){const y=scrollY; render(); scrollTo(0,y); if(CART.length) abrirCarrito(); else cerrar();}
   act();
 }
@@ -654,13 +678,13 @@ function refrescarCarta(){
 async function cargarAgotados(){
   if(!SHEET_ID) return;
   try{
-    const base=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&t=${Date.now()}`;
+    const base=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&t=${Date.now()}`;
     let r=await fetch(base+'&sheet=Agotados');
     if(!r.ok) r=await fetch(base);              // si la pestaña tiene otro nombre, usa la primera
     if(!r.ok) return;
     const txt=await r.text();
     const nuevos=new Set();
-    txt.trim().split('\n').slice(1).forEach(linea=>{
+    txt.trim().split('\n').forEach(linea=>{
       const [id,,agotado]=linea.split(',').map(c=>c.replace(/^"|"$/g,'').trim());
       if(id && /^(true|verdadero|si|sí|x|1)$/i.test(agotado)) nuevos.add(id);
     });
@@ -707,8 +731,23 @@ function chispas(){
 
 render();
 chispas();
+setTimeout(preguntarVaciar,400);
 cargarAgotados();
 setInterval(cargarAgotados,120000);                       // revisa cada 2 minutos
 setInterval(()=>{ if(!$('#veil').classList.contains('open')) refrescarCarta(); },300000); // actualiza "abierto/cerrado"
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) cargarAgotados(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ cargarAgotados(); preguntarVaciar(); } });
+addEventListener('focus',preguntarVaciar);
+// Al regresar de WhatsApp: ¿ya enviaste tu pedido?
+function preguntarVaciar(){
+  let f=null; try{f=sessionStorage.getItem('colorado-enviado');}catch(_){}
+  if(!f) return;
+  try{sessionStorage.removeItem('colorado-enviado');}catch(_){}
+  if(!CART.length) return;
+  abrir(`<div class="sheet-h"><h3>¿Ya enviaste tu pedido?</h3><button class="cerrar-x" id="cerrarX" aria-label="Cerrar">${X_SVG}</button></div>
+    <p class="sub">Si ya lo mandaste por WhatsApp, vaciamos tu carrito para que quede listo para la próxima.</p>
+    <div class="acts"><button class="btn ghost" id="x">No, seguir con mi pedido</button><button class="btn main" id="vaciar">Sí, vaciar carrito</button></div>`);
+  $('#cerrarX').onclick=cerrar; $('#x').onclick=cerrar;
+  $('#vaciar').onclick=()=>{ CART=[]; Object.assign(FORM,{hora:'',coment:'',cambio:''}); guardar(); cerrar(); const y=scrollY; render(); scrollTo(0,y);
+    const t=$('#toast'); t.innerHTML='¡Gracias por tu pedido! 🔥'; t.classList.add('ver'); clearTimeout(window.__toast); window.__toast=setTimeout(()=>t.classList.remove('ver'),2500); };
+}
 })();

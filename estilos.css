@@ -302,3 +302,20 @@ section .tip{margin:0 0 12px}
 .fila-nivel .tag{margin:0;flex:none}
 .sab-chip.off{opacity:1}
 .sab-chip.off b,.sab-chip.off .nivel,.sab-chip.off > span{opacity:.45}
+
+/* Botón de cerrar en todas las ventanas */
+.x-flot{position:sticky;top:-20px;height:0;z-index:3}
+.x-flot .cerrar-x{position:absolute;right:-6px;top:-8px;background:color-mix(in srgb,var(--carbon) 85%,transparent);backdrop-filter:blur(4px)}
+/* Media orden, carne y faltantes */
+.nota-media{margin:0;font-size:14px;color:var(--hueso)}
+.nota-media b{color:var(--ambar)}
+.aviso-falta{margin:10px 0 0;font-size:14px;color:var(--hueso);background:color-mix(in srgb,var(--rojo) 14%,var(--carbon));border:1px solid color-mix(in srgb,var(--rojo) 45%,var(--ceniza));border-radius:10px;padding:9px 12px}
+.aviso-falta b{color:#FF8C8F}
+.sel-hora{width:100%;background:var(--carbon);border:1.5px solid var(--ceniza);border-radius:10px;padding:11px 12px;color:var(--hueso);font:inherit;appearance:auto}
+.sel-hora:focus{border-color:var(--naranja);outline:none}
+.sel-hora:disabled{opacity:.5}
+.nota-tiempo{margin:0;display:flex;align-items:center;gap:6px;font-size:14px;color:var(--hueso)}
+.nota-tiempo svg{flex:none}
+.tip.con-ic{display:flex;align-items:flex-start;gap:8px}
+.tip.con-ic svg{flex:none;margin-top:1px}
+.chip:disabled{opacity:.45}
