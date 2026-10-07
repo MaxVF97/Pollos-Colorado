@@ -41,7 +41,7 @@ const IMG=new Proxy({},{get:(_,k)=>`${String(k)}.webp`});
 // ===== Productos agotados =====
 // Se leen de una hoja de Google. Mientras SHEET_ID esté vacío, todo aparece disponible.
 // La hoja debe llamarse "Agotados" y tener columnas: id | producto | agotado (casilla)
-const SHEET_ID='1Np9aXL6YgoKA_iZIlucSgJW1rGa2JuQoLPkw_dn5e_o';
+const SHEET_ID='1Np9aXL6YgoKA_iZIlucSgJW1rGa2JuQoLPkw_dn5e_o';   // hoja de PRUEBA de Max (cambiar por la del dueño)
 const OFF=new Set();
 
 // ===== Sabores del pollo =====
@@ -63,7 +63,7 @@ const SABORES=[
 // Íconos de nivel de sabor
 const IC_SAB={
  flama:'<svg class="ic-flama" width="16" height="20" viewBox="0 0 34 40" aria-hidden="true"><path fill="#F2711C" d="M17 1c2 7 9 10 11 18 2.6 10-4 20-11 20S3.4 32 6 22c1-4 3.5-6 4.5-10 2 3 2 6 1.5 8 3-2 6-9 5-19z"/><path fill="#FFC15E" d="M17 22c1.5 3 5 4.5 5 9a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-6 .6 1.5.6 2.5.3 3.5 1.6-1 2.7-3.6 2.2-6.5z"/></svg>',
- dulce:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><g stroke="#C98A12" stroke-width="1" stroke-linejoin="round"><path fill="#F5B83D" d="M12 2.2l3.3 1.9v3.8L12 9.8 8.7 7.9V4.1z"/><path fill="#FFC85A" d="M7.9 9.3l3.3 1.9V15l-3.3 1.9L4.6 15v-3.8z"/><path fill="#F5B83D" d="M16.1 9.3l3.3 1.9V15l-3.3 1.9-3.3-1.9v-3.8z"/><path fill="#E9A426" d="M12 16.5l3.3 1.9v3.4H8.7v-3.4z"/></g><path fill="#FFE7A3" d="M10.2 4.8l1.8-1 .9.5-1.8 1z"/></svg>',
+ dulce:'<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><g stroke=\"#B97A0E\" stroke-width=\".7\" stroke-linejoin=\"round\"><path fill=\"#FFC85A\" d=\"M12.00 14.95L9.45 13.47L9.45 10.53L12.00 9.05L14.55 10.52L14.55 13.47z\"/><path fill=\"#F5B83D\" d=\"M17.72 14.95L15.16 13.47L15.16 10.53L17.72 9.05L20.27 10.52L20.27 13.47z\"/><path fill=\"#E9A426\" d=\"M14.86 19.90L12.30 18.42L12.30 15.47L14.86 14.00L17.41 15.47L17.41 18.43z\"/><path fill=\"#F5B83D\" d=\"M9.14 19.90L6.59 18.42L6.59 15.47L9.14 14.00L11.70 15.47L11.70 18.43z\"/><path fill=\"#FFC85A\" d=\"M6.28 14.95L3.73 13.47L3.73 10.53L6.28 9.05L8.84 10.52L8.84 13.47z\"/><path fill=\"#E9A426\" d=\"M9.14 10.00L6.59 8.53L6.59 5.58L9.14 4.10L11.70 5.58L11.70 8.53z\"/><path fill=\"#F5B83D\" d=\"M14.86 10.00L12.30 8.53L12.30 5.58L14.86 4.10L17.41 5.57L17.41 8.53z\"/></g><path fill=\"#FFE7A3\" d=\"M11.40 12.20L10.45 11.65L10.45 10.55L11.40 10.00L12.35 10.55L12.35 11.65z\"/></svg>',
  acido:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#9BD14B"/><circle cx="12" cy="12" r="7.6" fill="#E3F7B8"/><g stroke="#9BD14B" stroke-width="1.4" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13M7.4 7.4l9.2 9.2M16.6 7.4l-9.2 9.2"/></g><circle cx="12" cy="12" r="1.3" fill="#9BD14B"/></svg>',
  salado:'<svg width="20" height="22" viewBox="3 1 16 22" aria-hidden="true"><path fill="#D9D2C7" d="M8 9h8l1 11.2a1.6 1.6 0 0 1-1.6 1.8H8.6A1.6 1.6 0 0 1 7 20.2z"/><path fill="#B8AFA2" d="M8.2 5.5h7.6a1 1 0 0 1 1 1V9H7.2V6.5a1 1 0 0 1 1-1z"/><g fill="#6E655A"><circle cx="10" cy="7.2" r=".6"/><circle cx="12" cy="7.2" r=".6"/><circle cx="14" cy="7.2" r=".6"/></g><g fill="#fff"><circle cx="5" cy="3.5" r=".7"/><circle cx="7" cy="2" r=".5"/><circle cx="4" cy="1.6" r=".5"/></g></svg>'
 };
@@ -292,7 +292,7 @@ function render(){
   </div>
   <main class="wrap">
     ${sec('pollos','Pollos','Todos incluyen arroz, salsa, tortillas, cebollita, chile toreado y totopos. Cada medio pollo incluye un sabor a elegir.',`<div class="sab-banner" style="background-image:url(${IMG.pcrudo})"><span>Al carbón desde temprano</span></div><div class="grid">${MENU.filter(m=>m.sec==='pollos').map(m=>card(m)).join('')}</div>`)}
-    ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<div class="sab-banner" style="background-image:url(${IMG.sabores})"><span>11 sabores, bañados al carbón</span></div><p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="leyenda"><span>${IC_SAB.salado} Salado</span><span>${IC_SAB.flama} Picante</span><span>${IC_SAB.dulce} Dulce</span><span>${IC_SAB.dulce}${IC_SAB.acido} Agridulce</span></div><div class="sabores-lista">${SABORES.map(([k,l,d,t])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}${apagado('sab-'+k)?' <span class="tag">Agotado</span>':''}</b>${nivelSabor(t)}<span>${esc(d)}</span></div>`).join('')}</div>`)}
+    ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<div class="sab-banner" style="background-image:url(${IMG.sabores})"><span>11 sabores, bañados al carbón</span></div><p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="leyenda"><span>${IC_SAB.salado} Salado</span><span>${IC_SAB.flama} Picante</span><span>${IC_SAB.dulce} Dulce</span><span>${IC_SAB.dulce}${IC_SAB.acido} Agridulce</span></div><div class="sabores-lista">${SABORES.map(([k,l,d,t])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}</b><div class="fila-nivel">${nivelSabor(t)}${apagado('sab-'+k)?'<span class="tag">Agotado</span>':''}</div><span>${esc(d)}</span></div>`).join('')}</div>`)}
     ${sec('paquetes','Paquetes','Para compartir en familia. Eliges los sabores al agregarlo.',`<div class="grid">${MENU.filter(m=>m.sec==='paquetes').map(m=>card(m)).join('')}</div>`)}
     ${sec('viernes','Promo de viernes',VIERNES?'Solo hoy.':'Se puede pedir únicamente los viernes.',card(byId('viernes'),true))}
     ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. El sabor se agrega aparte.',card(byId('costillas'),true)+`<div class="sab-banner" style="background-image:url(${IMG.costcharola});margin-top:14px"><span>Jugosas, directo de la brasa</span></div>`)}
@@ -654,8 +654,11 @@ function refrescarCarta(){
 async function cargarAgotados(){
   if(!SHEET_ID) return;
   try{
-    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Agotados&t=${Date.now()}`;
-    const txt=await (await fetch(url)).text();
+    const base=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&t=${Date.now()}`;
+    let r=await fetch(base+'&sheet=Agotados');
+    if(!r.ok) r=await fetch(base);              // si la pestaña tiene otro nombre, usa la primera
+    if(!r.ok) return;
+    const txt=await r.text();
     const nuevos=new Set();
     txt.trim().split('\n').slice(1).forEach(linea=>{
       const [id,,agotado]=linea.split(',').map(c=>c.replace(/^"|"$/g,'').trim());

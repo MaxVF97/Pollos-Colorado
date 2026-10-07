@@ -297,3 +297,8 @@ section .tip{margin:0 0 12px}
 .sheet-h h3{margin:0}
 .cerrar-x{flex:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--ceniza);background:var(--carbon);color:var(--hueso);display:grid;place-items:center}
 .cerrar-x:hover{border-color:var(--naranja);color:var(--naranja)}
+
+.fila-nivel{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:24px}
+.fila-nivel .tag{margin:0;flex:none}
+.sab-chip.off{opacity:1}
+.sab-chip.off b,.sab-chip.off .nivel,.sab-chip.off > span{opacity:.45}
