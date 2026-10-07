@@ -63,7 +63,7 @@ const SABORES=[
 // Íconos de nivel de sabor
 const IC_SAB={
  flama:'<svg class="ic-flama" width="16" height="20" viewBox="0 0 34 40" aria-hidden="true"><path fill="#F2711C" d="M17 1c2 7 9 10 11 18 2.6 10-4 20-11 20S3.4 32 6 22c1-4 3.5-6 4.5-10 2 3 2 6 1.5 8 3-2 6-9 5-19z"/><path fill="#FFC15E" d="M17 22c1.5 3 5 4.5 5 9a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-6 .6 1.5.6 2.5.3 3.5 1.6-1 2.7-3.6 2.2-6.5z"/></svg>',
- dulce:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#F5B83D" d="M12 2.5c-.4 0-.7.2-.9.5C9.4 5.6 5.5 10.6 5.5 14.5a6.5 6.5 0 0 0 13 0c0-3.9-3.9-8.9-5.6-11.5a1 1 0 0 0-.9-.5z"/><path fill="#FFE29A" d="M9.2 14.2c.1 1.6 1.1 2.9 2.6 3.3.5.1.7.6.5 1-.1.3-.5.5-.8.4a5 5 0 0 1-3.7-4.6c0-.4.3-.7.7-.7s.7.2.7.6z"/></svg>',
+ dulce:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><g stroke="#C98A12" stroke-width="1" stroke-linejoin="round"><path fill="#F5B83D" d="M12 2.2l3.3 1.9v3.8L12 9.8 8.7 7.9V4.1z"/><path fill="#FFC85A" d="M7.9 9.3l3.3 1.9V15l-3.3 1.9L4.6 15v-3.8z"/><path fill="#F5B83D" d="M16.1 9.3l3.3 1.9V15l-3.3 1.9-3.3-1.9v-3.8z"/><path fill="#E9A426" d="M12 16.5l3.3 1.9v3.4H8.7v-3.4z"/></g><path fill="#FFE7A3" d="M10.2 4.8l1.8-1 .9.5-1.8 1z"/></svg>',
  acido:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#9BD14B"/><circle cx="12" cy="12" r="7.6" fill="#E3F7B8"/><g stroke="#9BD14B" stroke-width="1.4" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13M7.4 7.4l9.2 9.2M16.6 7.4l-9.2 9.2"/></g><circle cx="12" cy="12" r="1.3" fill="#9BD14B"/></svg>',
  salado:'<svg width="20" height="22" viewBox="3 1 16 22" aria-hidden="true"><path fill="#D9D2C7" d="M8 9h8l1 11.2a1.6 1.6 0 0 1-1.6 1.8H8.6A1.6 1.6 0 0 1 7 20.2z"/><path fill="#B8AFA2" d="M8.2 5.5h7.6a1 1 0 0 1 1 1V9H7.2V6.5a1 1 0 0 1 1-1z"/><g fill="#6E655A"><circle cx="10" cy="7.2" r=".6"/><circle cx="12" cy="7.2" r=".6"/><circle cx="14" cy="7.2" r=".6"/></g><g fill="#fff"><circle cx="5" cy="3.5" r=".7"/><circle cx="7" cy="2" r=".5"/><circle cx="4" cy="1.6" r=".5"/></g></svg>'
 };
@@ -114,7 +114,7 @@ const MENU=[
  {id:'arroz',sec:'extras',n:'Arroz',d:'Orden',p:20,img:'arroz'},
  {id:'salsa',sec:'extras',n:'Salsa tradicional',d:'La de la casa',p:15,img:'salsa'},
  {id:'salsasabor',sec:'extras',n:'Salsa de sabor',d:'BBQ, ajo, chipotle, tamarindo y más',p:SABOR_EXTRA,ic:'bowl',g:[{k:'ss',t:'Sabores',ops:SABORES,pref:'sab-',tipo:'cantidad',ayuda:`$${SABOR_EXTRA} cada una. Elige cuántas quieres de cada sabor.`}]},
- {id:'ensalada',sec:'extras',n:'Ensalada',d:'Orden',p:20,ic:'leaf'},
+ {id:'ensalada',sec:'extras',n:'Ensalada',d:'Orden',p:20,img:'ensalada'},
  {id:'papas',sec:'extras',n:'Papas cambray',d:'Orden',p:40,img:'papas'},
  {id:'sopa',sec:'extras',n:'Sopa de codito',d:'Orden',p:40,img:'sopa'},
  {id:'refgrande',sec:'extras',n:'Refresco 1.5 L',d:'Coca-Cola o Sidral Mundet',p:38,img:'coca15',g:[gRef(1)]},
@@ -188,7 +188,7 @@ function etiquetasPiezas(pzs){
 const nomSabor=k=>(SABORES.find(x=>x[0]===k)||[,k])[1];
 function textoPieza(p){
   if(p.t==='pollo'&&p.modo==='mitad'&&p.s[1]&&p.s[1]!==p.s[0]) return `½ ${nomSabor(p.s[0])} y ½ ${nomSabor(p.s[1])}`;
-  return nomSabor(p.s[0])+(p.t==='pollo'?' completo':'');
+  return nomSabor(p.s[0])+(p.t==='pollo'?' completo':'')+(p.t==='cuarto'&&p.corte?` · ${p.corte}`:'');
 }
 function detalles(c){
   const m=byId(c.id), d=[];
@@ -215,6 +215,7 @@ const IC={
  leaf:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20c0-9 6-15 16-16-1 10-7 16-16 16z"/><path d="M4 20 13 11"/></svg>',
  fb:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.6-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.6V21h3z"/></svg>',
  ig:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+ carrito:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2.2l2.3 10.4a1.6 1.6 0 0 0 1.6 1.3h7.7a1.6 1.6 0 0 0 1.5-1.1L20.5 8H6.1"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg>',
  pin:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>',
  wa:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.6 11.6 0 0 0 4.4 3.9c1.6.7 2.3.8 3.1.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3z"/></svg>',
  reloj:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
@@ -266,13 +267,13 @@ function avisoHorario(){
 
 function render(){
   const offList=[...OFF].map(k=>INSUMOS[k]||(byId(k)&&byId(k).n)).filter(Boolean);
-  const chispas=Array.from({length:14},(_,i)=>`<i style="left:${(i*7.3+3)%100}%;animation-delay:${(i*0.43)%6}s;animation-duration:${5+(i%4)}s"></i>`).join('');
   $('#root').innerHTML=`
   <header class="top">
     <div class="wrap">
       <a class="marca" href="#inicio">${FLAMA}<span><b>COLORADO</b><small>POLLOS ASADOS</small></span></a>
       ${pillEstado()}
       <a class="wa-mini" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener" aria-label="WhatsApp">${IC.wa}<span>WhatsApp</span></a>
+      <button class="carrito" id="cartBtn" aria-label="Ver mi pedido">${IC.carrito}<span class="badge" id="badge"></span><span class="ctot" id="ctot"></span></button>
     </div>
     <nav class="cats" aria-label="Categorías">
       <a href="#pollos">Pollos</a><a href="#sabores">Sabores</a><a href="#paquetes">Paquetes</a><a href="#viernes">Promo viernes</a><a href="#costillas">Costillas</a><a href="#arrachera">Arrachera</a><a href="#extras">Extras</a><a href="#ubicacion">Ubicación</a>
@@ -280,7 +281,6 @@ function render(){
   </header>
   <div class="hero" id="inicio">
     <div class="bg" style="background-image:url(${IMG.portada})"></div>
-    <div class="chispas" aria-hidden="true">${chispas}</div>
     <div class="wrap">
       <span class="label">Pollos asados al carbón · Villa de Álvarez</span>
       <h1>Sabor que se comparte, <span>hecho al carbón</span></h1>
@@ -296,7 +296,7 @@ function render(){
     ${sec('paquetes','Paquetes','Para compartir en familia. Eliges los sabores al agregarlo.',`<div class="grid">${MENU.filter(m=>m.sec==='paquetes').map(m=>card(m)).join('')}</div>`)}
     ${sec('viernes','Promo de viernes',VIERNES?'Solo hoy.':'Se puede pedir únicamente los viernes.',card(byId('viernes'),true))}
     ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. El sabor se agrega aparte.',card(byId('costillas'),true)+`<div class="sab-banner" style="background-image:url(${IMG.costcharola});margin-top:14px"><span>Jugosas, directo de la brasa</span></div>`)}
-    ${sec('arrachera','Arrachera texana','',card(byId('arrachera'),true))}
+    ${sec('arrachera','Arrachera texana','',card(byId('arrachera'),true)+`<div class="galeria"><div style="background-image:url(${IMG.arrac})" role="img" aria-label="Arrachera en trozos"></div><div style="background-image:url(${IMG.arrachera2})" role="img" aria-label="Arrachera en el asador"></div></div>`)}
     ${sec('extras','Extras','Agrégalos a tu pedido.',`<div class="sab-banner" style="background-image:url(${IMG.acomp})"><span>Acompáñalo como se debe</span></div><div class="extras">${MENU.filter(m=>m.sec==='extras').map(extra).join('')}</div>`)}
     <div class="cinta">Sabor que se comparte <span>|</span> Hecho al carbón</div>
     <footer class="pie" id="ubicacion">
@@ -326,7 +326,7 @@ function render(){
       </div>
     </div>
   </main>
-  <div class="bar"><button id="cartBtn"></button></div>
+  <div class="toast" id="toast" role="status"></div>
   <div class="veil" id="veil"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>`;
   $$('[data-add]').forEach(b=>b.onclick=()=>{const m=byId(b.dataset.add); if(disponible(m)) abrirItem(m);});
   $('#cartBtn').onclick=abrirCarrito;
@@ -344,9 +344,16 @@ function copiar(){copiarTexto(LINK,$('#copiar'),'Copiar enlace',$('#linkTxt'));}
 const total=()=>CART.reduce((a,c)=>a+precioLinea(c),0);
 const piezas=()=>CART.reduce((a,c)=>a+c.q,0);
 function barra(pulso){
-  const b=$('#cartBtn'); b.disabled=!CART.length;
-  b.innerHTML=CART.length?`<span>Ver mi pedido (${piezas()})</span><span class="tot">${money(total())}</span>`:'<span>Tu pedido está vacío</span><span></span>';
-  if(pulso){b.classList.remove('pulso');void b.offsetWidth;b.classList.add('pulso');}
+  const b=$('#cartBtn'), n=piezas();
+  b.classList.toggle('lleno',!!n);
+  $('#badge').textContent=n||''; $('#ctot').textContent=n?money(total()):'';
+  b.setAttribute('aria-label',n?`Ver mi pedido: ${n} productos, ${money(total())}`:'Tu pedido está vacío');
+  if(pulso){
+    b.classList.remove('pulso');void b.offsetWidth;b.classList.add('pulso');
+    const t=$('#toast'); t.innerHTML=`Agregado a tu pedido · <b>${money(total())}</b> <button id="verPed">Ver pedido</button>`; t.classList.add('ver');
+    $('#verPed').onclick=()=>{t.classList.remove('ver');abrirCarrito();};
+    clearTimeout(window.__toast); window.__toast=setTimeout(()=>t.classList.remove('ver'),3200);
+  }
 }
 
 // ===== Hojas deslizables =====
@@ -419,7 +426,8 @@ function abrirItem(m,idx){
         const pzs=sel[g.k], et=etiquetasPiezas(pzs);
         const fila=(i,mi)=>`<div class="chips">${g.ops.map(([k,l])=>chip(g,k,l,pzs[i].s[mi]===k,`data-pz="${i}" data-mi="${mi}" data-o="${k}"`)).join('')}</div>`;
         cuerpo=pzs.map((p,i)=>`<div class="pieza"><div class="pieza-h"><span class="lugar">${esc(et[i])}</span>${p.t==='pollo'?`<div class="modo"><button data-modo="completo" data-pz="${i}" aria-pressed="${p.modo!=='mitad'}">Completo</button><button data-modo="mitad" data-pz="${i}" aria-pressed="${p.modo==='mitad'}">Mitad y mitad</button></div>`:''}</div>
-          ${p.t==='pollo'&&p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${fila(i,0)}<span class="mitad">2ª mitad</span>${fila(i,1)}`:fila(i,0)}</div>`).join('');
+          ${p.t==='pollo'&&p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${fila(i,0)}<span class="mitad">2ª mitad</span>${fila(i,1)}`:fila(i,0)}
+          ${p.t==='cuarto'?`<span class="mitad">¿Qué pieza prefieres? <small>(opcional)</small></span><div class="chips">${['','Pierna y muslo','Ala y pechuga'].map(c=>`<button class="chip" data-corte="${c}" data-pz="${i}" aria-pressed="${(p.corte||'')===c}">${c||'Me da igual'}</button>`).join('')}</div>`:''}</div>`).join('');
         const ayuda=g.piezas.includes('pollo')?'Sin costo. Cada pollo puede ser completo de un sabor o mitad y mitad.':'Incluye 1 sabor sin costo.';
         return `<div class="grupo"><div class="grupo-h"><span class="f">${esc(g.t)}</span></div><p class="small">${ayuda}</p>${cuerpo}</div>`;
       }
@@ -446,6 +454,7 @@ function abrirItem(m,idx){
     if($('#verExtra')) $('#verExtra').onclick=()=>{verExtra=true; pintarGrupos();};
     // Piezas: completo / mitad y mitad, y el sabor de cada parte
     $$('[data-modo]').forEach(b=>b.onclick=()=>{const p=sel.sab[+b.dataset.pz]; p.modo=b.dataset.modo; if(p.modo==='mitad'&&!p.s[1]) p.s[1]=p.s[0]; if(p.modo==='completo') p.s=[p.s[0]]; sync();});
+    $$('[data-corte]').forEach(b=>b.onclick=()=>{sel.sab[+b.dataset.pz].corte=b.dataset.corte; sync();});
     $$('[data-mi]').forEach(b=>b.onclick=()=>{const p=sel.sab[+b.dataset.pz]; p.s[+b.dataset.mi]=b.dataset.o; sync();});
     // Botones: un sabor por lugar
     $$('[data-l]').forEach(b=>b.onclick=()=>{const g=grupos.find(x=>x.k===b.dataset.l); lugares[g.k][+b.dataset.i]=b.dataset.o; deLugares(g); sync();});
@@ -655,7 +664,45 @@ async function cargarAgotados(){
   }catch(e){ /* sin conexión a la hoja: se muestra todo disponible */ }
 }
 
+// ===== Chispas de brasa por toda la página =====
+function chispas(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv=document.createElement('canvas'); cv.className='brasas'; cv.setAttribute('aria-hidden','true'); document.body.appendChild(cv);
+  const cx=cv.getContext('2d'); let W,H,P=[]; const dpr=Math.min(2,devicePixelRatio||1);
+  const tam=()=>{W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);};
+  tam(); addEventListener('resize',tam);
+  const N=()=>Math.round(Math.min(46,Math.max(22,W/22)));
+  const nueva=(inicio)=>{const t=Math.random(); return {
+    x:Math.random()*W, y:inicio?Math.random()*H:H+10,
+    vx:(Math.random()-.5)*.35, vy:-(.35+Math.random()*1.1),
+    tipo:t<.55?'punto':t<.85?'raya':'astilla',
+    r:t<.55?.6+Math.random()*1.6:.5+Math.random()*.8, largo:3+Math.random()*7,
+    vida:0, max:260+Math.random()*420, fase:Math.random()*6.28, giro:(Math.random()-.5)*.08, ang:Math.random()*6.28,
+    color:Math.random()<.6?[255,150+Math.random()*60|0,60]:[255,90+Math.random()*50|0,25]};};
+  for(let i=0;i<N();i++) P.push(nueva(true));
+  let ultimo=0;
+  (function paso(ts){
+    requestAnimationFrame(paso);
+    if(document.hidden||ts-ultimo<30) return; ultimo=ts;
+    cx.clearRect(0,0,W,H); cx.globalCompositeOperation='lighter';
+    while(P.length<N()) P.push(nueva(false));
+    P.forEach((p,i)=>{
+      p.vida++; p.fase+=.08; p.ang+=p.giro;
+      p.x+=p.vx+Math.sin(p.fase)*.35; p.y+=p.vy; p.vy*=.999;
+      const f=Math.min(1,p.vida/30)*Math.max(0,1-p.vida/p.max), parpadeo=.65+.35*Math.sin(p.fase*2.3);
+      const a=f*parpadeo*.85; if(a<=0||p.y<-20){P[i]=nueva(false);return;}
+      const [r,g,b]=p.color; cx.fillStyle=`rgba(${r},${g},${b},${a})`; cx.strokeStyle=cx.fillStyle;
+      cx.shadowColor=`rgba(255,120,30,${a})`; cx.shadowBlur=6;
+      if(p.tipo==='punto'){cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill();}
+      else if(p.tipo==='raya'){cx.lineWidth=p.r;cx.lineCap='round';cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(p.x-p.vx*p.largo*2,p.y-p.vy*p.largo);cx.stroke();}
+      else{cx.save();cx.translate(p.x,p.y);cx.rotate(p.ang);cx.beginPath();cx.moveTo(-2,-.6);cx.lineTo(1.8,-1);cx.lineTo(1.2,.9);cx.lineTo(-1.6,.7);cx.closePath();cx.fill();cx.restore();}
+    });
+    cx.shadowBlur=0; cx.globalCompositeOperation='source-over';
+  })(0);
+}
+
 render();
+chispas();
 cargarAgotados();
 setInterval(cargarAgotados,120000);                       // revisa cada 2 minutos
 setInterval(()=>{ if(!$('#veil').classList.contains('open')) refrescarCarta(); },300000); // actualiza "abierto/cerrado"

@@ -10,7 +10,7 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 112px)}
-body{margin:0;background:var(--carbon);color:var(--hueso);font-family:var(--body);font-size:16px;line-height:1.45;padding-bottom:96px}
+body{margin:0;background:var(--carbon);color:var(--hueso);font-family:var(--body);font-size:16px;line-height:1.45;padding-bottom:24px}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
@@ -268,3 +268,25 @@ section .tip{margin:0 0 12px}
   .nivel.fuego .ic-flama:nth-child(3){animation-delay:-.9s;animation-duration:1.55s}
 }
 @keyframes llama{0%,100%{transform:scale(1,1) skewX(0)}25%{transform:scale(.96,1.08) skewX(-3deg)}50%{transform:scale(1.04,.95) skewX(2deg)}75%{transform:scale(.98,1.06) skewX(-1deg)}}
+
+/* Carrito arriba */
+.top .wa-mini{margin-left:auto}
+.carrito{position:relative;flex:none;display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:999px;border:1.5px solid var(--ceniza);background:var(--brasa);color:var(--hueso)}
+.carrito.lleno{background:var(--naranja);border-color:var(--naranja);color:var(--carbon)}
+.carrito .badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--hueso);color:var(--carbon);font-size:12px;font-weight:800;display:grid;place-items:center;border:2px solid var(--carbon)}
+.carrito .badge:empty{display:none}
+.carrito .ctot{font-family:var(--display);font-size:18px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.carrito .ctot:empty{display:none}
+@media (max-width:480px){.carrito{padding:0 9px}.carrito .ctot{display:none}}
+@media (prefers-reduced-motion:no-preference){.carrito.pulso{animation:pulso .5s ease-out}}
+@keyframes pulso{40%{transform:scale(1.15)}}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 120px);transform:translate(-50%,-12px);z-index:25;background:var(--hueso);color:var(--carbon);border-radius:999px;padding:8px 8px 8px 16px;font-size:14px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap;max-width:calc(100% - 32px)}
+.toast.ver{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{border:0;border-radius:999px;background:var(--naranja);color:var(--carbon);font-weight:700;padding:6px 12px}
+/* Chispas */
+.brasas{position:fixed;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
+/* Banners y galería */
+.sab-banner{aspect-ratio:2/1}
+.galeria{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.galeria div{aspect-ratio:2/1;border-radius:10px;background:var(--brasa-2) center/cover no-repeat;max-width:100%}
+@media (max-width:560px){.galeria{grid-template-columns:1fr}}
