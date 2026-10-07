@@ -46,19 +46,33 @@ const OFF=new Set();
 
 // ===== Sabores del pollo =====
 // Cada medio pollo incluye un sabor. En 1/4 de pollo el sabor cuesta $25 extra.
+// [id, nombre, descripción, tipo de sabor] · tipo: salado | p1 | p2 | p3 (picor) | dulce | agridulce
 const SABORES=[
- ['adobado','Adobado','El tradicional al carbón'],
- ['ajo','Ajo','Intenso y doradito'],
- ['chipotle','Chipotle','Ahumado, con picor delicioso'],
- ['diabla','Diabla','Picante intenso 🔥'],
- ['habanero','Habanero','Para los que aguantan 🔥'],
- ['jalapeno','Jalapeño','Cremoso, picante suave'],
- ['chimichurri','Chimichurri','Cremoso y especiado'],
- ['tamarindo','Tamarindo','Agridulce'],
- ['bbq','BBQ','Dulce y ahumado (el favorito)'],
- ['teriyaki','Teriyaki','Dulce, estilo oriental'],
- ['pina','Piña','Dulce tropical'],
+ ['adobado','Adobado','El tradicional al carbón','salado'],
+ ['ajo','Ajo','Intenso y doradito','salado'],
+ ['chimichurri','Chimichurri','Cremoso y especiado','salado'],
+ ['jalapeno','Jalapeño','Cremoso, picante suave','p1'],
+ ['chipotle','Chipotle','Ahumado, con picor delicioso','p2'],
+ ['diabla','Diabla','Picante intenso','p3'],
+ ['habanero','Habanero','Para los que aguantan','p3'],
+ ['bbq','BBQ','Dulce y ahumado (el favorito)','dulce'],
+ ['teriyaki','Teriyaki','Dulce, estilo oriental','dulce'],
+ ['pina','Piña','Dulce tropical','dulce'],
+ ['tamarindo','Tamarindo','Agridulce','agridulce'],
 ];
+// Íconos de nivel de sabor
+const IC_SAB={
+ flama:'<svg class="ic-flama" width="16" height="20" viewBox="0 0 34 40" aria-hidden="true"><path fill="#F2711C" d="M17 1c2 7 9 10 11 18 2.6 10-4 20-11 20S3.4 32 6 22c1-4 3.5-6 4.5-10 2 3 2 6 1.5 8 3-2 6-9 5-19z"/><path fill="#FFC15E" d="M17 22c1.5 3 5 4.5 5 9a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-6 .6 1.5.6 2.5.3 3.5 1.6-1 2.7-3.6 2.2-6.5z"/></svg>',
+ dulce:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#F5B83D" d="M12 2.5c-.4 0-.7.2-.9.5C9.4 5.6 5.5 10.6 5.5 14.5a6.5 6.5 0 0 0 13 0c0-3.9-3.9-8.9-5.6-11.5a1 1 0 0 0-.9-.5z"/><path fill="#FFE29A" d="M9.2 14.2c.1 1.6 1.1 2.9 2.6 3.3.5.1.7.6.5 1-.1.3-.5.5-.8.4a5 5 0 0 1-3.7-4.6c0-.4.3-.7.7-.7s.7.2.7.6z"/></svg>',
+ acido:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#9BD14B"/><circle cx="12" cy="12" r="7.6" fill="#E3F7B8"/><g stroke="#9BD14B" stroke-width="1.4" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13M7.4 7.4l9.2 9.2M16.6 7.4l-9.2 9.2"/></g><circle cx="12" cy="12" r="1.3" fill="#9BD14B"/></svg>',
+ salado:'<svg width="20" height="22" viewBox="3 1 16 22" aria-hidden="true"><path fill="#D9D2C7" d="M8 9h8l1 11.2a1.6 1.6 0 0 1-1.6 1.8H8.6A1.6 1.6 0 0 1 7 20.2z"/><path fill="#B8AFA2" d="M8.2 5.5h7.6a1 1 0 0 1 1 1V9H7.2V6.5a1 1 0 0 1 1-1z"/><g fill="#6E655A"><circle cx="10" cy="7.2" r=".6"/><circle cx="12" cy="7.2" r=".6"/><circle cx="14" cy="7.2" r=".6"/></g><g fill="#fff"><circle cx="5" cy="3.5" r=".7"/><circle cx="7" cy="2" r=".5"/><circle cx="4" cy="1.6" r=".5"/></g></svg>'
+};
+const nivelSabor=t=>{
+  if(/^p\d$/.test(t)){const n=+t[1]; return `<span class="nivel ${n===3?'fuego':''}" title="Picor ${n} de 3">${IC_SAB.flama.repeat(n)}</span>`;}
+  if(t==='dulce') return `<span class="nivel" title="Dulce">${IC_SAB.dulce}</span>`;
+  if(t==='agridulce') return `<span class="nivel" title="Agridulce">${IC_SAB.dulce}${IC_SAB.acido}</span>`;
+  return `<span class="nivel" title="Salado">${IC_SAB.salado}</span>`;
+};
 const SABOR_EXTRA=25;
 const REFRESCOS=[['coca15','Coca-Cola',''],['sidral15','Sidral Mundet','']];
 
@@ -89,7 +103,7 @@ const MENU=[
  {id:'medio',sec:'pollos',n:'1/2 Pollo',p:125,img:'medio',inc:BASE,g:[gSab(['medio']),gExtra]},
  {id:'entero',sec:'pollos',n:'1 Pollo',p:235,img:'entero',inc:BASE,g:[gSab(['pollo']),gExtra]},
  {id:'p1',sec:'paquetes',n:'Paquete 1',s:'1/4 de pollo',p:105,img:'p1',inc:[['','1/4 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','3 flautas'],['coca450','Coca-Cola chica'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['cuarto']),gExtra]},
- {id:'p2',sec:'paquetes',n:'Paquete 2',s:'1/2 de pollo',p:149,img:'p2',inc:[['','1/2 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['papas','1/2 orden de papa'],['coca450','Coca-Cola chica']],g:[gSab(['medio']),gExtra]},
+ {id:'p2',sec:'paquetes',n:'Paquete 2',s:'1/2 de pollo',p:149,img:'medio',inc:[['','1/2 de pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['papas','1/2 orden de papa'],['coca450','Coca-Cola chica']],g:[gSab(['medio']),gExtra]},
  {id:'p3',sec:'paquetes',n:'Paquete 3',s:'1 pollo',p:279,img:'p3',inc:[['','1 pollo'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['flautas','5 flautas'],['ensalada','Ensalada'],['ref15','1 refresco grande']],g:[gSab(['pollo']),gExtra,gRef(1)]},
  {id:'p4',sec:'paquetes',n:'Paquete 4',s:'1 pollo y 1/2',p:365,img:'p4',inc:[['','1 pollo y 1/2'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['sopa','1 sopa de codito'],['papas','1 orden de papas']],g:[gSab(['pollo','medio']),gExtra]},
  {id:'p5',sec:'paquetes',n:'Paquete 5',s:'3 pollos',p:695,img:'p5',inc:[['','3 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','2 refrescos grandes'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['pollo','pollo','pollo']),gExtra,gRef(2)]},
@@ -218,7 +232,7 @@ function card(m,wide){
   const cerradoViernes=m.id==='viernes'&&!VIERNES&&!OFF.has(m.id);
   const sello=OFF.has(m.id)?'<span class="sello">Agotado</span>':(cerradoViernes?'<span class="sello" style="color:var(--ambar);border-color:var(--ambar)">Solo viernes</span>':'');
   return `<article class="card ${wide?'wide':''} ${ok?'':'off'}">
-    <div class="ph" style="background-image:url(${IMG[m.img]})">${sello}<span class="precio">${money(m.p)}</span></div>
+    <div class="ph" style="background-image:url(${IMG[m.img]})${m.fit?';background-size:contain;background-color:#050505':''}">${sello}<span class="precio">${money(m.p)}</span></div>
     <div class="body">
       <h3>${esc(m.n)}${m.s?`<small>${esc(m.s)}</small>`:''}</h3>
       <ul class="inc" aria-label="Incluye">${(m.inc||[]).map(([k,l])=>`<li class="${k&&apagado(k)?'sin':''}">${esc(l)}</li>`).join('')}</ul>
@@ -265,7 +279,7 @@ function render(){
     </nav>
   </header>
   <div class="hero" id="inicio">
-    <div class="bg" style="background-image:url(${IMG.alitas})"></div>
+    <div class="bg" style="background-image:url(${IMG.portada})"></div>
     <div class="chispas" aria-hidden="true">${chispas}</div>
     <div class="wrap">
       <span class="label">Pollos asados al carbón · Villa de Álvarez</span>
@@ -277,17 +291,18 @@ function render(){
     </div>
   </div>
   <main class="wrap">
-    ${sec('pollos','Pollos','Todos incluyen arroz, salsa, tortillas, cebollita, chile toreado y totopos. Cada medio pollo incluye un sabor a elegir.',`<div class="grid">${MENU.filter(m=>m.sec==='pollos').map(m=>card(m)).join('')}</div>`)}
-    ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="sabores-lista">${SABORES.map(([k,l,d])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}${apagado('sab-'+k)?' <span class="tag">Agotado</span>':''}</b><span>${esc(d)}</span></div>`).join('')}</div>`)}
+    ${sec('pollos','Pollos','Todos incluyen arroz, salsa, tortillas, cebollita, chile toreado y totopos. Cada medio pollo incluye un sabor a elegir.',`<div class="sab-banner" style="background-image:url(${IMG.pcrudo})"><span>Al carbón desde temprano</span></div><div class="grid">${MENU.filter(m=>m.sec==='pollos').map(m=>card(m)).join('')}</div>`)}
+    ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<div class="sab-banner" style="background-image:url(${IMG.sabores})"><span>11 sabores, bañados al carbón</span></div><p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="leyenda"><span>${IC_SAB.salado} Salado</span><span>${IC_SAB.flama} Picante</span><span>${IC_SAB.dulce} Dulce</span><span>${IC_SAB.dulce}${IC_SAB.acido} Agridulce</span></div><div class="sabores-lista">${SABORES.map(([k,l,d,t])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}${apagado('sab-'+k)?' <span class="tag">Agotado</span>':''}</b>${nivelSabor(t)}<span>${esc(d)}</span></div>`).join('')}</div>`)}
     ${sec('paquetes','Paquetes','Para compartir en familia. Eliges los sabores al agregarlo.',`<div class="grid">${MENU.filter(m=>m.sec==='paquetes').map(m=>card(m)).join('')}</div>`)}
     ${sec('viernes','Promo de viernes',VIERNES?'Solo hoy.':'Se puede pedir únicamente los viernes.',card(byId('viernes'),true))}
-    ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. El sabor se agrega aparte.',card(byId('costillas'),true))}
+    ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. El sabor se agrega aparte.',card(byId('costillas'),true)+`<div class="sab-banner" style="background-image:url(${IMG.costcharola});margin-top:14px"><span>Jugosas, directo de la brasa</span></div>`)}
     ${sec('arrachera','Arrachera texana','',card(byId('arrachera'),true))}
-    ${sec('extras','Extras','Agrégalos a tu pedido.',`<div class="extras">${MENU.filter(m=>m.sec==='extras').map(extra).join('')}</div>`)}
+    ${sec('extras','Extras','Agrégalos a tu pedido.',`<div class="sab-banner" style="background-image:url(${IMG.acomp})"><span>Acompáñalo como se debe</span></div><div class="extras">${MENU.filter(m=>m.sec==='extras').map(extra).join('')}</div>`)}
     <div class="cinta">Sabor que se comparte <span>|</span> Hecho al carbón</div>
     <footer class="pie" id="ubicacion">
-      <div class="bloque"><h4>Dónde estamos</h4>
+      <div class="bloque"><div class="foto-local" style="background-image:url(${IMG.local})" role="img" aria-label="Fachada de Pollos Colorado"></div><h4>Dónde estamos</h4>
         <p>${esc(DIRECCION)}</p>
+        <p class="sub-pie">Busca el toldo rojo de «Pollos asados de sabores».</p>
         <div class="btns"><a class="pill or" href="${MAPS}" target="_blank" rel="noopener">${IC.pin} Abrir en Google Maps</a></div></div>
       <div class="bloque"><h4>Horario</h4>
         <p><b>Miércoles a lunes</b><br>${h12(ABRE)} a ${h12(CIERRA)}</p>
@@ -382,7 +397,7 @@ function abrirItem(m,idx){
   const sub=m.inc?'Incluye '+esc(m.inc.map(x=>x[1]).join(', ').toLowerCase()):esc(m.d);
   const blanco=/^coca|^ref/.test(m.id);
   const tieneSabor=grupos.some(g=>g.k==='sab'||g.k==='sabx'||g.etiqueta);
-  abrir(`${m.img?`<div class="ph" style="background-image:url(${IMG[m.img]})${blanco?';background-size:contain;background-color:#fff':''}"></div>`:''}
+  abrir(`${m.img?`<div class="ph" style="background-image:url(${IMG[m.img]})${blanco?';background-size:contain;background-color:#fff':m.fit?';background-size:contain;background-color:#050505;aspect-ratio:1/1':''}"></div>`:''}
     <h3>${esc(m.n)}</h3>
     <p class="sub">${sub}</p>
     ${sin.length?`<p class="nota-sin" style="margin-top:8px">Hoy no tenemos ${esc(sin.join(', ').toLowerCase())}.</p>`:''}

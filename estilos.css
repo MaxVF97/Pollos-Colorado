@@ -246,3 +246,25 @@ section .tip{margin:0 0 12px}
 .modo button{border:0;background:transparent;color:var(--humo);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
 .modo button[aria-pressed="true"]{background:var(--hueso);color:var(--carbon)}
 .mitad{display:block;font-size:13px;font-weight:700;color:var(--ambar);margin:8px 0 6px}
+
+/* Fotos reales */
+.sab-banner{position:relative;aspect-ratio:16/7;max-width:100%;border-radius:12px;background:var(--brasa-2) center/cover no-repeat;margin-bottom:12px;overflow:hidden}
+.sab-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 60%)}
+.sab-banner span{position:absolute;left:14px;bottom:10px;z-index:1;font-family:var(--display);font-size:20px;text-transform:uppercase;color:#fff;right:14px}
+.foto-local{aspect-ratio:16/9;max-width:100%;border-radius:8px;background:var(--brasa-2) center/cover no-repeat;margin-bottom:12px}
+
+/* Nivel de sabor */
+.sab-chip{display:flex;flex-direction:column;gap:4px}
+.nivel{display:flex;align-items:flex-end;gap:3px;height:24px}
+.nivel svg{height:22px;width:auto}
+.nivel svg{display:block}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 12px;font-size:13px;color:var(--humo)}
+.leyenda span{display:inline-flex;align-items:center;gap:4px}
+.leyenda svg{width:16px;height:16px}
+.nivel.fuego .ic-flama{transform-origin:50% 100%;filter:drop-shadow(0 0 4px rgba(242,113,28,.55))}
+@media (prefers-reduced-motion:no-preference){
+  .nivel.fuego .ic-flama{animation:llama 1.4s ease-in-out infinite}
+  .nivel.fuego .ic-flama:nth-child(2){animation-delay:-.45s;animation-duration:1.2s}
+  .nivel.fuego .ic-flama:nth-child(3){animation-delay:-.9s;animation-duration:1.55s}
+}
+@keyframes llama{0%,100%{transform:scale(1,1) skewX(0)}25%{transform:scale(.96,1.08) skewX(-3deg)}50%{transform:scale(1.04,.95) skewX(2deg)}75%{transform:scale(.98,1.06) skewX(-1deg)}}
