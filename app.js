@@ -78,6 +78,8 @@ const disponibleOp=(g,k)=>!apagado(g.pref+k);
 //  medio y cuarto → un sabor
 const gSab=piezas=>({k:'sab',t:'Sabor de tu pollo',ops:SABORES,pref:'sab-',tipo:'piezas',piezas});
 // Sabor extra o doble: se suma a los incluidos, $25 cada uno
+// Costillas: el sabor no va incluido, se agrega como extra
+const gSabCostilla={k:'extra',t:'¿Le pones sabor?',ops:SABORES,pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,etiqueta:'Sabor',boton:'+ Agregar sabor a tus costillas',ayuda:`Las costillas no incluyen sabor. Opcional, +$${SABOR_EXTRA} cada uno.`};
 const gExtra={k:'extra',t:'¿Sabor extra o doble?',ops:SABORES,pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,ayuda:`Opcional, +$${SABOR_EXTRA} cada uno. Para doble, elige el mismo sabor que arriba.`};
 const gRef=n=>({k:'ref',t:n>1?'Refrescos grandes':'Refresco grande',ops:REFRESCOS,pref:'',tipo:'exacto',por:n,ayuda:n>1?`Elige ${n} refrescos de 1.5 L.`:'Refresco de 1.5 L.',slot:'Refresco'});
 
@@ -92,6 +94,7 @@ const MENU=[
  {id:'p4',sec:'paquetes',n:'Paquete 4',s:'1 pollo y 1/2',p:365,img:'p4',inc:[['','1 pollo y 1/2'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['sopa','1 sopa de codito'],['papas','1 orden de papas']],g:[gSab(['pollo','medio']),gExtra]},
  {id:'p5',sec:'paquetes',n:'Paquete 5',s:'3 pollos',p:695,img:'p5',inc:[['','3 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','2 refrescos grandes'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['pollo','pollo','pollo']),gExtra,gRef(2)]},
  {id:'viernes',sec:'viernes',n:'Promoción de viernes',s:'2 pollos',p:449,img:'viernes',inc:[['','2 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','1 refresco grande']],g:[gSab(['pollo','pollo']),gExtra,gRef(1)]},
+ {id:'costillas',sec:'costillas',n:'Costillas',s:'1 kg de costilla',p:290,img:'costillas',inc:[['','1 kg de costilla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebollita'],['chile','Chile toreado'],['papas','Orden de papas cambray'],['limon','Limón']],g:[gSabCostilla]},
  {id:'arrachera',sec:'arrachera',n:'Arrachera texana',s:'Lo más premium del menú',p:320,img:'arrachera',inc:[['','1 kg de arrachera'],['frijoles','Frijoles de la olla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebolla'],['chile','Chile toreado'],['limon','Limón']]},
  {id:'flautas',sec:'extras',n:'Flautas',d:'$8 c/u · cada 5 por $35',p:8,img:'flautas'},
  {id:'arroz',sec:'extras',n:'Arroz',d:'Orden',p:20,img:'arroz'},
@@ -179,8 +182,8 @@ function detalles(c){
     const o=c.sel&&c.sel[g.k];
     if(g.tipo==='piezas'){ if(Array.isArray(o)){ const et=etiquetasPiezas(o); o.forEach((p,i)=>d.push([et[i],textoPieza(p)])); } return; }
     if(!suma(o)) return;
-    const etiqueta=g.k==='ref'?(suma(o)>1?'Refrescos':'Refresco'):g.k==='sabx'?'Sabor':g.k==='extra'?(suma(o)>1?'Sabores extra':'Sabor extra'):(suma(o)>1?'Sabores':'Sabor');
-    d.push([etiqueta, eleccionTxt(g,o)+(g.precio?` (+${money(suma(o)*g.precio)})`:'')]);
+    const etiqueta=g.etiqueta?(suma(o)>1?g.etiqueta.replace(/r$/,'res'):g.etiqueta):g.k==='ref'?(suma(o)>1?'Refrescos':'Refresco'):g.k==='sabx'?'Sabor':g.k==='extra'?(suma(o)>1?'Sabores extra':'Sabor extra'):(suma(o)>1?'Sabores':'Sabor');
+    d.push([etiqueta, (g.tipo==='multi'?Object.keys(o).filter(k=>o[k]>0).map(nomSabor).join(' y '):eleccionTxt(g,o))+(g.precio?` (+${money(suma(o)*g.precio)})`:'')]);
   });
   if(c.id==='flautas') d.push(['Precio',desgloseFlautas(c.q)]);
   return d;
@@ -206,6 +209,7 @@ const IC={
 // ===== Pintar la carta =====
 function enCarrito(id){return CART.filter(c=>c.id===id).reduce((a,c)=>a+c.q,0);}
 function notaSabor(m){
+  if((m.g||[]).some(x=>x===gSabCostilla)) return `<p class="nota-sabor">🔥 Sabor opcional +${money(SABOR_EXTRA)}</p>`;
   const g=(m.g||[]).find(x=>x.k==='sab'||x.k==='sabx'); if(!g) return '';
   return g.piezas.includes('pollo') ? '<p class="nota-sabor">🔥 Sabor a elegir: completo o mitad y mitad</p>' : '<p class="nota-sabor">🔥 Incluye 1 sabor a elegir</p>';
 }
@@ -257,7 +261,7 @@ function render(){
       <a class="wa-mini" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener" aria-label="WhatsApp">${IC.wa}<span>WhatsApp</span></a>
     </div>
     <nav class="cats" aria-label="Categorías">
-      <a href="#pollos">Pollos</a><a href="#sabores">Sabores</a><a href="#paquetes">Paquetes</a><a href="#viernes">Promo viernes</a><a href="#arrachera">Arrachera</a><a href="#extras">Extras</a><a href="#ubicacion">Ubicación</a>
+      <a href="#pollos">Pollos</a><a href="#sabores">Sabores</a><a href="#paquetes">Paquetes</a><a href="#viernes">Promo viernes</a><a href="#costillas">Costillas</a><a href="#arrachera">Arrachera</a><a href="#extras">Extras</a><a href="#ubicacion">Ubicación</a>
     </nav>
   </header>
   <div class="hero" id="inicio">
@@ -277,6 +281,7 @@ function render(){
     ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="sabores-lista">${SABORES.map(([k,l,d])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}${apagado('sab-'+k)?' <span class="tag">Agotado</span>':''}</b><span>${esc(d)}</span></div>`).join('')}</div>`)}
     ${sec('paquetes','Paquetes','Para compartir en familia. Eliges los sabores al agregarlo.',`<div class="grid">${MENU.filter(m=>m.sec==='paquetes').map(m=>card(m)).join('')}</div>`)}
     ${sec('viernes','Promo de viernes',VIERNES?'Solo hoy.':'Se puede pedir únicamente los viernes.',card(byId('viernes'),true))}
+    ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. El sabor se agrega aparte.',card(byId('costillas'),true))}
     ${sec('arrachera','Arrachera texana','',card(byId('arrachera'),true))}
     ${sec('extras','Extras','Agrégalos a tu pedido.',`<div class="extras">${MENU.filter(m=>m.sec==='extras').map(extra).join('')}</div>`)}
     <div class="cinta">Sabor que se comparte <span>|</span> Hecho al carbón</div>
@@ -376,7 +381,7 @@ function abrirItem(m,idx){
   const sin=faltantes(m);
   const sub=m.inc?'Incluye '+esc(m.inc.map(x=>x[1]).join(', ').toLowerCase()):esc(m.d);
   const blanco=/^coca|^ref/.test(m.id);
-  const tieneSabor=grupos.some(g=>g.k==='sab'||g.k==='sabx');
+  const tieneSabor=grupos.some(g=>g.k==='sab'||g.k==='sabx'||g.etiqueta);
   abrir(`${m.img?`<div class="ph" style="background-image:url(${IMG[m.img]})${blanco?';background-size:contain;background-color:#fff':''}"></div>`:''}
     <h3>${esc(m.n)}</h3>
     <p class="sub">${sub}</p>
@@ -410,7 +415,7 @@ function abrirItem(m,idx){
           <div class="chips">${opciones.map(([k,l])=>chip(g,k,l,v===k,`data-l="${g.k}" data-i="${i}" data-o="${k}"`,g.tipo==='opcional'&&k?' +$'+g.precio:'')).join('')}</div>`).join('');
         if(g.tipo==='opcional'&&s) cuenta=`+${money(s*g.precio)}`;
       } else if(g.tipo==='multi'){
-        if(!verExtra) return `<button class="abrir-extra" id="verExtra">+ Agregar sabor extra o doble <span>+$${g.precio} c/u</span></button>`;
+        if(!verExtra) return `<button class="abrir-extra" id="verExtra">${g.boton||'+ Agregar sabor extra o doble'} <span>+$${g.precio} c/u</span></button>`;
         cuerpo=`<div class="chips">${g.ops.map(([k,l])=>chip(g,k,l,!!sel[g.k][k],`data-t="${g.k}" data-o="${k}"`)).join('')}</div>`;
         if(s) cuenta=`+${money(s*g.precio)}`;
       } else {
