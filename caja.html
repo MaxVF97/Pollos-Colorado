@@ -37,7 +37,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .vistas button[aria-pressed="true"]{background:var(--naranja);color:var(--carbon)}
 .reloj{font-family:var(--display);font-size:20px;color:var(--humo);min-width:84px;text-align:right}
 /* Vista venta */
-.venta{display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,34vw,380px);min-height:0}
+.venta{display:grid;grid-template-columns:minmax(0,1fr) clamp(320px,40vw,440px);min-height:0}
 .menu{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--ceniza)}
 .cats{display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;flex:none}
 .cats button{flex:none;font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:16px;padding:8px 16px;border-radius:12px;background:var(--brasa);border:1.5px solid var(--ceniza);color:var(--humo)}
@@ -52,12 +52,17 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .prod .t span{font-family:var(--display);font-size:17px;color:var(--ambar);white-space:nowrap}
 .prod .cnt{position:absolute;top:6px;right:6px;min-width:26px;height:26px;border-radius:999px;background:var(--naranja);color:var(--carbon);font-weight:800;display:grid;place-items:center;padding:0 6px}
 .prod.off{opacity:.4;pointer-events:none}
+.prod.nodia{opacity:.4;pointer-events:none;filter:grayscale(1)}
+.prod.nodia::after{content:"SOLO VIERNES";position:absolute;top:30%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);font-family:var(--display);font-size:18px;color:var(--hueso);border:2px solid var(--hueso);padding:2px 10px;border-radius:6px;white-space:nowrap}
 .prod.off::after{content:"AGOTADO";position:absolute;top:30%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);font-family:var(--display);font-size:22px;color:var(--rojo);border:3px solid var(--rojo);padding:2px 10px;border-radius:6px}
 /* Ticket lateral */
 .ticket{display:flex;flex-direction:column;min-height:0;background:var(--brasa)}
 .ticket-h{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
 .ticket-h h2{margin:0;font-family:var(--display);font-weight:400;font-size:26px}
-.ticket-h .folio{font-family:var(--label);font-weight:700;letter-spacing:.08em;color:var(--humo)}
+.ticket-h .limpiar{margin-left:10px}
+.cobro{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.cobro .tot{flex-direction:column;align-items:flex-start;gap:0}
+.ticket-h .folio{margin-left:auto;font-family:var(--label);font-weight:700;letter-spacing:.08em;color:var(--humo)}
 .lineas{flex:1;overflow-y:auto;padding:0 16px}
 .vacio{color:var(--humo);text-align:center;padding:40px 10px;font-size:15px}
 .vacio svg{display:block;margin:0 auto 10px;opacity:.5}
@@ -65,7 +70,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .ln b{font-weight:700}
 .ln .p{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
 .ln i{grid-column:1/-1;font-style:normal;font-size:13px;color:var(--humo)}
-.ln .ctl{grid-column:1/-1;display:flex;align-items:center;gap:6px;margin-top:4px}
+.ln .ctl{grid-column:1/-1;display:flex;align-items:center;gap:6px;margin-top:2px}
 .ln .ctl button{width:34px;height:34px;border-radius:10px;background:var(--carbon);border:1px solid var(--ceniza);font-size:20px;font-weight:700;color:var(--naranja)}
 .ln .ctl span{min-width:26px;text-align:center;font-weight:700}
 .ln .ctl .del{margin-left:auto;width:auto;padding:0 10px;font-size:13px;color:var(--rojo);border-color:color-mix(in srgb,var(--rojo) 40%,var(--ceniza))}
@@ -166,15 +171,21 @@ td{padding:8px 4px;border-bottom:1px solid var(--ceniza);font-variant-numeric:ta
   .cats{padding:8px 14px}.cats button{padding:6px 14px;font-size:15px}
   .ticket-h{padding:10px 14px 6px}.ticket-h h2{font-size:22px}
   .lineas{padding:0 14px}.ln{padding:7px 0}.ln .ctl button{width:30px;height:30px;font-size:18px}
+  .ln i{grid-column:1}.ln .ctl{grid-column:2;grid-row:2/span 3;align-self:end;margin:0}.ln .ctl .del{margin-left:4px;padding:0 8px}
   .pie{padding:8px 14px calc(10px + env(safe-area-inset-bottom,0px));gap:7px}
   .canal button{padding:6px;font-size:14px}
-  .tot b{font-size:30px}.cobrar{padding:11px;font-size:19px}
+  .tot b{font-size:28px}.tot span{font-size:12px}.cobrar{padding:12px;font-size:19px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}.prod .ph{height:84px}
   .vacio{padding:20px 10px}
   .modal{padding:14px 16px}.modal h3{font-size:24px}.f{margin:10px 0 6px}
   .chip{padding:8px 12px}.stepper button{width:42px;height:42px}.btn{padding:12px}.acts{margin-top:12px}
 }
 .top{min-width:0}.vistas{flex:none}
 @media (max-width:600px){.marca>div{display:none}.vistas button{padding:7px 12px;font-size:14px}}
+.extra-tg{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:9px 14px;border-radius:12px;border:1.5px dashed var(--ceniza);font-weight:700;color:var(--hueso);text-align:left}
+.extra-tg span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--naranja);color:var(--carbon);font-size:16px;line-height:1}
+.extra-tg small{color:var(--humo);font-weight:500}
+.extra-tg em{font-style:normal;color:var(--ambar);font-size:14px}
 .gira{display:none;font-size:12px;color:var(--humo);text-align:center;padding:0 14px 6px}
 
 </style>
@@ -195,13 +206,12 @@ td{padding:8px 4px;border-bottom:1px solid var(--ceniza);font-variant-numeric:ta
       <div class="grid" id="grid"></div>
     </div>
     <aside class="ticket">
-      <div class="ticket-h"><h2>Venta</h2><span class="folio" id="folio"></span></div>
+      <div class="ticket-h"><h2>Venta</h2><span class="folio" id="folio"></span><button class="limpiar" id="limpiar">Vaciar</button></div>
       <div class="lineas" id="lineas"></div>
       <div class="pie">
         <div class="canal"><button data-canal="Mostrador" aria-pressed="true">Mostrador</button><button data-canal="Teléfono" aria-pressed="false">Teléfono / WhatsApp</button></div>
-        <div class="tot"><span>Total</span><b id="total">$0</b></div>
-        <button class="cobrar" id="cobrar" disabled>Cobrar</button>
-        <button class="limpiar" id="limpiar">Vaciar venta</button>
+        <div class="cobro"><div class="tot"><span>Total</span><b id="total">$0</b></div>
+        <button class="cobrar" id="cobrar" disabled>Cobrar</button></div>
       </div>
     </aside>
   </section>
@@ -249,6 +259,9 @@ const nomSab=k=>(SABORES.find(s=>s[0]===k)||[,k])[1];
 const nomRef=k=>(REF.find(s=>s[0]===k)||[,k])[1];
 const PZN={pollo:'Pollo',medio:'Medio',cuarto:'Cuarto'};
 const OFF=new Set();
+// Día de la semana en Colima (0=domingo … 5=viernes)
+const diaHoy=()=>({Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6})[new Intl.DateTimeFormat('en-US',{timeZone:'America/Mexico_City',weekday:'short'}).format(new Date())];
+const SOLO_VIERNES=new Set(['viernes']);
 
 // ============ Estado (guardado solo en esta tablet, para la demo) ============
 const LS='colorado-caja-demo';
@@ -281,8 +294,8 @@ function pintarCats(){
 function pintarGrid(){
   $('#grid').innerHTML=M.filter(m=>m.c===cat).map(m=>{
     const n=venta.filter(l=>l.id===m.id).reduce((a,l)=>a+l.q,0);
-    const off=OFF.has(m.id)||(m.base&&OFF.has(m.base));
-    return `<button class="prod ${off?'off':''}" data-p="${m.id}"><div class="ph" style="background-image:url(${m.img}.webp)"></div>
+    const off=OFF.has(m.id)||(m.base&&OFF.has(m.base)), nodia=SOLO_VIERNES.has(m.id)&&diaHoy()!==5;
+    return `<button class="prod ${off?'off':''} ${nodia&&!off?'nodia':''}" data-p="${m.id}"><div class="ph" style="background-image:url(${m.img}.webp)"></div>
       <div class="t"><b>${esc(m.n)}</b><span>${money(m.p)}</span></div>${n?`<span class="cnt">${n}</span>`:''}</button>`;}).join('');
   $$('[data-p]').forEach(b=>b.onclick=()=>agregar(byId(b.dataset.p)));
 }
@@ -312,7 +325,7 @@ const X='<button class="x" id="cx" aria-label="Cerrar"><svg width="18" height="1
 function agregar(m){
   // Productos simples: se agregan con un toque
   if(!m.pz&&!m.media&&!m.ref&&!m.sab){const l=venta.find(x=>x.id===m.id); if(l) l.q++; else venta.push({id:m.id,q:1}); refrescar(); toast(`+1 ${m.n}`); return;}
-  let q=1, media=false; let pzs=m.pz?ajustaPzs(m,1):null, refs=m.ref?ajustaRefs(m,1):null, sabs=m.sab?[]:null, extras=(m.pz||m.extra)?[]:null;
+  let q=1, media=false; let pzs=m.pz?ajustaPzs(m,1):null, refs=m.ref?ajustaRefs(m,1):null, sabs=m.sab?[]:null, extras=(m.pz||m.extra)?[]:null, verExtra=false;
   const pinta=()=>{
     abrir(`<div class="modal-h"><h3>${esc(m.n)}</h3>${X}</div>
       ${m.media?`<span class="f">Tamaño</span><div class="chips"><button class="chip" data-md="0" aria-pressed="${!media}">Orden completa · ${money(m.p)}</button><button class="chip" data-md="1" aria-pressed="${media}">Media orden · ${money(m.media)}</button></div>`:''}
@@ -321,7 +334,7 @@ function agregar(m){
         ${p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${filaSab(i,0,p)}<span class="mitad">2ª mitad</span>${filaSab(i,1,p)}`:filaSab(i,0,p)}
         ${p.t==='cuarto'?`<span class="mitad">Pieza</span><div class="chips">${['','Pierna y muslo','Ala y pechuga'].map(c=>`<button class="chip" data-co="${c}" data-i="${i}" aria-pressed="${(p.corte||'')===c}">${c||'Me da igual'}</button>`).join('')}</div>`:''}</div>`).join(''):''}
       ${refs?`<span class="f">Refresco${refs.length>1?'s':''}</span>${refs.map((r,i)=>`<div class="chips" style="margin-bottom:6px">${REF.map(([k,l])=>`<button class="chip" data-rf="${k}" data-i="${i}" aria-pressed="${r===k}">${l}</button>`).join('')}</div>`).join('')}`:''}
-      ${extras?`<span class="f">¿Sabor extra? <small style="font-weight:500;color:var(--humo)">opcional · +$25 c/u</small></span><div class="chips">${SABORES.map(([k,l])=>`<button class="chip" data-ex="${k}" aria-pressed="${extras.includes(k)}" ${OFF.has('sab-'+k)?'disabled':''}>${l}</button>`).join('')}</div>`:''}
+      ${extras?`<button class="extra-tg" id="exTg" aria-expanded="${verExtra}"><span>${verExtra?'−':'+'}</span> Sabor extra <small>+$25 c/u</small>${extras.length?`<em>${extras.map(nomSab).join(', ')}</em>`:''}</button>${verExtra?`<div class="chips" style="margin-top:8px">${SABORES.map(([k,l])=>`<button class="chip" data-ex="${k}" aria-pressed="${extras.includes(k)}" ${OFF.has('sab-'+k)?'disabled':''}>${l}</button>`).join('')}</div>`:''}`:''}
       ${sabs?`<span class="f">Sabores (toca para agregar)</span><div class="chips">${SABORES.map(([k,l])=>`<button class="chip" data-ss="${k}">${l}${sabs.filter(x=>x===k).length?' ×'+sabs.filter(x=>x===k).length:''}</button>`).join('')}</div>${sabs.length?'<button class="limpiar" id="ssClr" style="margin-top:8px">Borrar sabores</button>':''}`:''}
       <div class="acts"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn main" id="ok" ${sabs&&!sabs.length?'disabled':''}>Agregar · ${money(precioLinea({id:m.id,q:sabs?sabs.length||1:q,media,extras}))}</button></div>`);
     $('#cx').onclick=cerrar; $('#cancel').onclick=cerrar;
@@ -331,6 +344,7 @@ function agregar(m){
     $$('[data-sb]').forEach(b=>b.onclick=()=>{pzs[+b.dataset.i].s[+b.dataset.h]=b.dataset.sb;pinta();});
     $$('[data-co]').forEach(b=>b.onclick=()=>{pzs[+b.dataset.i].corte=b.dataset.co;pinta();});
     $$('[data-rf]').forEach(b=>b.onclick=()=>{refs[+b.dataset.i]=b.dataset.rf;pinta();});
+    if($('#exTg')) $('#exTg').onclick=()=>{verExtra=!verExtra;pinta();};
     $$('[data-ex]').forEach(b=>b.onclick=()=>{const k=b.dataset.ex,i=extras.indexOf(k); if(i<0) extras.push(k); else extras.splice(i,1); pinta();});
     $$('[data-ss]').forEach(b=>b.onclick=()=>{sabs.push(b.dataset.ss);pinta();});
     if($('#ssClr')) $('#ssClr').onclick=()=>{sabs.length=0;pinta();};
