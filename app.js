@@ -99,8 +99,8 @@ const disponibleOp=(g,k)=>!apagado(g.pref+k);
 const gSab=piezas=>({k:'sab',t:'Sabor de tu pollo',ops:SABORES,pref:'sab-',tipo:'piezas',piezas});
 // Sabor extra o doble: se suma a los incluidos, $25 cada uno
 // Costillas: el sabor no va incluido, se agrega como extra
-const gSabCostilla={k:'extra',t:'¿Le pones sabor?',ops:SABORES,pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,etiqueta:'Sabor',boton:'+ Agregar sabor a tus costillas',ayuda:`Las costillas no incluyen sabor. Opcional, +$${SABOR_EXTRA} cada uno.`};
-const gExtra={k:'extra',t:'¿Sabor extra o doble?',ops:SABORES,pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,ayuda:`Opcional, +$${SABOR_EXTRA} cada uno. Para doble, elige el mismo sabor que arriba.`};
+const gSabCostilla={k:'extra',t:'¿Le pones sabor?',ops:SABORES.filter(x=>x[0]!=='adobado'),pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,etiqueta:'Sabor',boton:'+ Agregar sabor a tus costillas',ayuda:`Las costillas no incluyen sabor. Opcional, +$${SABOR_EXTRA} cada uno.`};
+const gExtra={k:'extra',t:'¿Sabor extra o doble?',ops:SABORES.filter(x=>x[0]!=='adobado'),pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,ayuda:`Opcional, +$${SABOR_EXTRA} cada uno. Para doble, elige el mismo sabor que arriba.`};
 const gRef=n=>({k:'ref',t:n>1?'Refrescos grandes':'Refresco grande',ops:REFRESCOS,pref:'',tipo:'exacto',por:n,ayuda:n>1?`Elige ${n} refrescos de 1.5 L.`:'Refresco de 1.5 L.',slot:'Refresco'});
 
 const BASE=[['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['cebollita','Cebollita'],['chile','Chile toreado'],['totopos','Totopos']];
