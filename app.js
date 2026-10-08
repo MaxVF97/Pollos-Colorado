@@ -275,12 +275,31 @@ function avisoHorario(){
   return '';
 }
 
+// ===== Guía «¿Cómo pedir?» =====
+// Cuando esté listo el video, sube tutorial.mp4 (y tutorial.jpg de portada) y pon aquí: 'tutorial.mp4'
+const VIDEO_TUTORIAL='';
+const PASOS=[
+  ['Elige lo que se te antoje','Toca un producto, escoge sabor y cantidad, y agrégalo.'],
+  ['Revisa tu pedido','Toca el carrito de arriba para ver o cambiar lo que llevas.'],
+  ['Pon tus datos','Recoges o te lo llevamos, la hora y cómo vas a pagar.'],
+  ['Envíalo por WhatsApp','Se abre WhatsApp con tu pedido escrito: solo toca enviar.']
+];
+function abrirGuia(){
+  abrir(`<h3>Así de fácil pides</h3>
+    <p class="sub">En menos de un minuto, sin descargar nada.</p>
+    ${VIDEO_TUTORIAL?`<video class="guia-video" src="${VIDEO_TUTORIAL}" poster="${VIDEO_TUTORIAL.replace(/\.mp4$/,'.jpg')}" controls playsinline preload="metadata"></video>`:''}
+    <ol class="guia-pasos">${PASOS.map(([t,d])=>`<li><b>${t}</b><span>${d}</span></li>`).join('')}</ol>
+    <p class="tip">¿Dudas? Escríbenos por WhatsApp y con gusto te ayudamos.</p>
+    <div class="acts"><button class="btn main" id="x">Empezar mi pedido</button></div>`);
+  $('#x').onclick=()=>{ const v=$('.guia-video'); if(v) v.pause(); cerrar(); const p=$('#pollos'); if(p) p.scrollIntoView({behavior:'smooth'}); };
+}
+
 function render(){
   const offList=[...OFF].map(k=>INSUMOS[k]||(byId(k)&&byId(k).n)).filter(Boolean);
   $('#root').innerHTML=`
   <header class="top">
     <div class="wrap">
-      <a class="marca" href="#inicio">${FLAMA}<span><b>COLORADO</b><small>POLLOS ASADOS</small></span></a>
+      <a class="marca" href="#inicio"><img class="logo" src="logo.webp" width="44" height="44" alt=""><span><b>COLORADO</b><small>POLLOS ASADOS</small></span></a>
       ${pillEstado()}
       <a class="wa-mini" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener" aria-label="WhatsApp">${IC.wa}<span>WhatsApp</span></a>
       <button class="carrito" id="cartBtn" aria-label="Ver mi pedido">${IC.carrito}<span class="badge" id="badge"></span><span class="ctot" id="ctot"></span></button>
@@ -295,6 +314,7 @@ function render(){
       <span class="label">Pollos asados al carbón · Villa de Álvarez</span>
       <h1>Sabor que se comparte, <span>hecho al carbón</span></h1>
       <p>Arma tu pedido aquí, elige si pasas por él o te lo llevamos, y envíalo por WhatsApp.</p>
+      <button class="como-pedir" id="guiaBtn" type="button"><span class="play" aria-hidden="true"></span>¿Cómo pedir?</button>
       ${VIERNES&&!OFF.has('viernes')?'<a class="viernes-hoy" href="#viernes">Hoy es viernes: 2 pollos con todo por $449</a>':''}
       ${avisoHorario()}
       ${offList.length?`<div class="aviso" role="status"><span><b>Hoy se terminó</b><br>${esc(offList.join(', '))}</span></div>`:''}
@@ -340,6 +360,7 @@ function render(){
   <div class="veil" id="veil"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>`;
   $$('[data-add]').forEach(b=>b.onclick=()=>{const m=byId(b.dataset.add); if(disponible(m)) abrirItem(m);});
   $('#cartBtn').onclick=abrirCarrito;
+  $('#guiaBtn').onclick=abrirGuia;
   $('#copiar').onclick=copiar;
   $('#veil').onclick=e=>{if(e.target.id==='veil')cerrar();};
   barra();
@@ -372,7 +393,7 @@ function abrir(html){
   if(!html.includes('cerrarX')) html=`<div class="x-flot"><button class="cerrar-x" id="cerrarX" aria-label="Cerrar">${X_SVG}</button></div>`+html;
   $('#sheet').innerHTML=html; $('#sheet').scrollTop=0;
   $('#cerrarX').onclick=()=>{ const x=$('#x'); if(x) x.click(); else cerrar(); };$('#veil').classList.add('open');document.body.style.overflow='hidden';}
-function cerrar(){$('#veil').classList.remove('open');document.body.style.overflow=''; if(pendiente){pendiente=false; refrescarCarta();}}
+function cerrar(){$$('#sheet video').forEach(v=>v.pause());$('#veil').classList.remove('open');document.body.style.overflow=''; if(pendiente){pendiente=false; refrescarCarta();}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrar();});
 
 // ===== Agregar un producto (cantidad, sabores, refrescos) =====
@@ -647,13 +668,15 @@ function abrirCarrito(){
     const e=estado(FORM.modo), mn=horaMinima();
     const mx=HORA_MAX(FORM.modo);
     // Solo horarios de servicio, cada 15 min, desde la hora más próxima posible
-    const slots=[]; for(let t=Math.ceil(mn/15)*15;t<=mx;t+=15) slots.push(aHHMM(t));
+    // Cada 5 min durante la primera hora disponible, luego cada 15 min
+    const slots=[]; const ini=Math.ceil(mn/5)*5;
+    for(let t=ini;t<=mx;t+=(t<ini+60?5:15)){ if(t>=ini+60) t=Math.ceil(t/15)*15; if(t<=mx) slots.push(aHHMM(t)); }
     if(FORM.hora&&!slots.includes(FORM.hora)) FORM.hora='';
     $('#fh').innerHTML=`<option value="">${e.antes?`A partir de las ${h12(mn)}`:'Lo antes posible'}</option>`+slots.map(v=>`<option value="${v}">${hora12(v)}</option>`).join('');
     $('#fh').value=FORM.hora; $('#fh').disabled=!e.abierto;
     $('#notaCarne').hidden=!hayCarne();
     $('#hint').textContent=!e.abierto?'':mn<=mx
-      ? `Horarios disponibles de ${h12(Math.ceil(mn/15)*15>mx?mn:Math.ceil(mn/15)*15)} a ${h12(mx)}.`
+      ? `Horarios disponibles de ${h12(Math.ceil(mn/5)*5)} a ${h12(mx)}.`
       : 'Déjala vacía y lo preparamos lo antes posible.';
     $('#pico').hidden=!(e.abierto&&!e.antes&&PICO_AHORA());
     $('#pico').textContent=`Estamos en hora pico (${h12(PICO[0])} a ${h12(PICO[1])}): ${FORM.modo==='recoge'?'tu pedido puede tardar un poco más':'a domicilio puede tardar hasta 60 min'}.`;
