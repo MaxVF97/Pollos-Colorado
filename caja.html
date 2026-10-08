@@ -37,19 +37,20 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .vistas button[aria-pressed="true"]{background:var(--naranja);color:var(--carbon)}
 .reloj{font-family:var(--display);font-size:20px;color:var(--humo);min-width:84px;text-align:right}
 /* Vista venta */
-.venta{display:grid;grid-template-columns:1fr 380px;min-height:0}
-.menu{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--ceniza)}
-.cats{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;flex:none}
-.cats button{flex:none;font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:16px;padding:10px 18px;border-radius:12px;background:var(--brasa);border:1.5px solid var(--ceniza);color:var(--humo)}
+.venta{display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,34vw,380px);min-height:0}
+.menu{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--ceniza)}
+.cats{display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;flex:none}
+.cats button{flex:none;font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:16px;padding:8px 16px;border-radius:12px;background:var(--brasa);border:1.5px solid var(--ceniza);color:var(--humo)}
 .cats button[aria-pressed="true"]{border-color:var(--naranja);color:var(--hueso);background:color-mix(in srgb,var(--naranja) 18%,var(--brasa))}
-.grid{flex:1;overflow-y:auto;padding:4px 16px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;align-content:start}
+.grid{flex:1;overflow-y:auto;padding:2px 14px 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:10px;align-content:start;grid-auto-rows:max-content}
 .prod{position:relative;display:flex;flex-direction:column;background:var(--brasa);border:1.5px solid var(--ceniza);border-radius:14px;overflow:hidden;text-align:left;transition:transform .08s}
 .prod:active{transform:scale(.97)}
-.prod .ph{aspect-ratio:4/3;background:var(--brasa-2) center/cover no-repeat}
-.prod .t{padding:8px 10px 10px;display:flex;justify-content:space-between;align-items:flex-end;gap:6px}
-.prod .t b{font-family:var(--display);font-weight:400;font-size:19px;line-height:1.05;text-transform:uppercase}
-.prod .t span{font-family:var(--display);font-size:19px;color:var(--ambar);white-space:nowrap}
-.prod .cnt{position:absolute;top:8px;right:8px;min-width:28px;height:28px;border-radius:999px;background:var(--naranja);color:var(--carbon);font-weight:800;display:grid;place-items:center;padding:0 6px}
+.prod .ph{height:96px;flex:none;background:var(--brasa-2) center/cover no-repeat}
+@media (min-width:1200px) and (min-height:700px){.prod .ph{height:130px}}
+.prod .t{padding:6px 9px 8px;display:flex;flex-direction:column;gap:1px;flex:1;justify-content:space-between}
+.prod .t b{font-family:var(--display);font-weight:400;font-size:16px;line-height:1.08;text-transform:uppercase;letter-spacing:.01em}
+.prod .t span{font-family:var(--display);font-size:17px;color:var(--ambar);white-space:nowrap}
+.prod .cnt{position:absolute;top:6px;right:6px;min-width:26px;height:26px;border-radius:999px;background:var(--naranja);color:var(--carbon);font-weight:800;display:grid;place-items:center;padding:0 6px}
 .prod.off{opacity:.4;pointer-events:none}
 .prod.off::after{content:"AGOTADO";position:absolute;top:30%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);font-family:var(--display);font-size:22px;color:var(--rojo);border:3px solid var(--rojo);padding:2px 10px;border-radius:6px}
 /* Ticket lateral */
@@ -100,7 +101,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .stepper{display:inline-flex;align-items:center;border:1.5px solid var(--ceniza);border-radius:12px;background:var(--carbon)}
 .stepper button{width:48px;height:48px;font-size:24px;font-weight:700;color:var(--naranja)}
 .stepper span{min-width:36px;text-align:center;font-weight:700;font-size:18px}
-.acts{display:flex;gap:10px;margin-top:18px}
+.acts{display:flex;gap:10px;margin-top:18px;position:sticky;bottom:-20px;background:var(--brasa);padding:10px 0 4px;z-index:1}
 .btn{flex:1;padding:15px;border-radius:12px;font-family:var(--label);font-weight:700;font-size:18px;letter-spacing:.05em;text-transform:uppercase}
 .btn.main{background:var(--naranja);color:var(--carbon)}
 .btn.ghost{border:1.5px solid var(--ceniza)}
@@ -148,14 +149,34 @@ td{padding:8px 4px;border-bottom:1px solid var(--ceniza);font-variant-numeric:ta
 .prox button{padding:12px 16px;border-radius:12px;border:1.5px dashed var(--ceniza);color:var(--humo);font-weight:700}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--hueso);color:var(--carbon);padding:12px 18px;border-radius:999px;font-weight:600;opacity:0;transition:.2s;z-index:30;pointer-events:none;max-width:90%;text-align:center}
 .toast.ver{opacity:1;transform:translate(-50%,0)}
-@media (max-width:900px){
+@media (orientation:portrait) and (max-width:900px), (max-width:640px){
 .toast{bottom:auto;top:76px}
-  .venta{grid-template-columns:1fr}
-  .ticket{position:fixed;left:0;right:0;bottom:0;max-height:55%;border-top:2px solid var(--naranja);z-index:5}
-  .grid{padding-bottom:45vh}
+  .venta{grid-template-columns:minmax(0,1fr)}
+  .ticket{position:fixed;left:0;right:0;bottom:0;max-height:44%;border-top:2px solid var(--naranja);z-index:5}
+  .grid{padding-bottom:46vh}
+  .gira{display:block!important}
   .kpis{grid-template-columns:1fr 1fr}.dos{grid-template-columns:1fr}
   .reloj{display:none}
 }
+/* Pantallas bajitas (tablet acostada): todo más compacto */
+@media (max-height:640px){
+  .top{padding:6px 14px;gap:10px}
+  .marca b{font-size:21px}.marca img{width:32px!important;height:32px!important}
+  .vistas button{padding:6px 12px;font-size:14px}.reloj{font-size:17px}
+  .cats{padding:8px 14px}.cats button{padding:6px 14px;font-size:15px}
+  .ticket-h{padding:10px 14px 6px}.ticket-h h2{font-size:22px}
+  .lineas{padding:0 14px}.ln{padding:7px 0}.ln .ctl button{width:30px;height:30px;font-size:18px}
+  .pie{padding:8px 14px calc(10px + env(safe-area-inset-bottom,0px));gap:7px}
+  .canal button{padding:6px;font-size:14px}
+  .tot b{font-size:30px}.cobrar{padding:11px;font-size:19px}
+  .vacio{padding:20px 10px}
+  .modal{padding:14px 16px}.modal h3{font-size:24px}.f{margin:10px 0 6px}
+  .chip{padding:8px 12px}.stepper button{width:42px;height:42px}.btn{padding:12px}.acts{margin-top:12px}
+}
+.top{min-width:0}.vistas{flex:none}
+@media (max-width:600px){.marca>div{display:none}.vistas button{padding:7px 12px;font-size:14px}}
+.gira{display:none;font-size:12px;color:var(--humo);text-align:center;padding:0 14px 6px}
+
 </style>
 </head>
 <body>
@@ -170,6 +191,7 @@ td{padding:8px 4px;border-bottom:1px solid var(--ceniza);font-variant-numeric:ta
   <section class="venta" id="pVenta">
     <div class="menu">
       <div class="cats" id="cats"></div>
+      <p class="gira">Tip: gira la tablet en horizontal para ver todo mejor.</p>
       <div class="grid" id="grid"></div>
     </div>
     <aside class="ticket">
@@ -207,7 +229,7 @@ const M=[
  {id:'p4',c:'paquetes',n:'Paquete 4',p:365,img:'p4',pz:['pollo','medio'],base:'pollo'},
  {id:'p5',c:'paquetes',n:'Paquete 5',p:695,img:'p5',pz:['pollo','pollo','pollo'],ref:2,base:'pollo'},
  {id:'viernes',c:'paquetes',n:'Promo viernes',p:449,img:'viernes',pz:['pollo','pollo'],ref:1,base:'pollo'},
- {id:'costillas',c:'carnes',n:'Costillas',p:290,media:150,img:'costillas'},
+ {id:'costillas',c:'carnes',n:'Costillas',p:290,media:150,img:'costillas',extra:1},
  {id:'arrachera',c:'carnes',n:'Arrachera',p:320,media:160,img:'arrachera'},
  {id:'flautas',c:'extras',n:'Flautas',p:8,img:'flautas',nota:'5 por $35'},
  {id:'arroz',c:'extras',n:'Arroz',p:20,img:'arroz'},
@@ -237,7 +259,7 @@ let cat='pollos', venta=[], canal='Mostrador';
 
 const precioLinea=l=>{const m=byId(l.id);
   if(m.id==='flautas') return Math.floor(l.q/5)*35+(l.q%5)*8;
-  let p=(l.media?m.media:m.p)*l.q; if(l.sab) p+=0; return p+(l.extra||0)*25;};
+  let p=(l.media?m.media:m.p)*l.q; return p+((l.extras||[]).length)*25;};
 const total=()=>venta.reduce((a,l)=>a+precioLinea(l),0);
 function detalle(l){
   const m=byId(l.id), d=[];
@@ -246,6 +268,7 @@ function detalle(l){
     d.push(`${PZN[p.t]}${n}: ${p.modo==='mitad'&&p.s[1]!==p.s[0]?`½ ${nomSab(p.s[0])} y ½ ${nomSab(p.s[1])}`:nomSab(p.s[0])}${p.corte?' · '+p.corte:''}`);});
   if(l.refs) d.push('Refresco: '+l.refs.map(nomRef).join(', '));
   if(l.sabs) d.push('Sabores: '+l.sabs.map(nomSab).join(', '));
+  if(l.extras&&l.extras.length) d.push('Sabor extra: '+l.extras.map(nomSab).join(', ')+` (+${money(l.extras.length*25)})`);
   if(m.id==='flautas'&&l.q>=5) d.push(`${Math.floor(l.q/5)} promo(s) de 5`);
   return d;
 }
@@ -289,7 +312,7 @@ const X='<button class="x" id="cx" aria-label="Cerrar"><svg width="18" height="1
 function agregar(m){
   // Productos simples: se agregan con un toque
   if(!m.pz&&!m.media&&!m.ref&&!m.sab){const l=venta.find(x=>x.id===m.id); if(l) l.q++; else venta.push({id:m.id,q:1}); refrescar(); toast(`+1 ${m.n}`); return;}
-  let q=1, media=false; let pzs=m.pz?ajustaPzs(m,1):null, refs=m.ref?ajustaRefs(m,1):null, sabs=m.sab?[]:null;
+  let q=1, media=false; let pzs=m.pz?ajustaPzs(m,1):null, refs=m.ref?ajustaRefs(m,1):null, sabs=m.sab?[]:null, extras=(m.pz||m.extra)?[]:null;
   const pinta=()=>{
     abrir(`<div class="modal-h"><h3>${esc(m.n)}</h3>${X}</div>
       ${m.media?`<span class="f">Tamaño</span><div class="chips"><button class="chip" data-md="0" aria-pressed="${!media}">Orden completa · ${money(m.p)}</button><button class="chip" data-md="1" aria-pressed="${media}">Media orden · ${money(m.media)}</button></div>`:''}
@@ -298,8 +321,9 @@ function agregar(m){
         ${p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${filaSab(i,0,p)}<span class="mitad">2ª mitad</span>${filaSab(i,1,p)}`:filaSab(i,0,p)}
         ${p.t==='cuarto'?`<span class="mitad">Pieza</span><div class="chips">${['','Pierna y muslo','Ala y pechuga'].map(c=>`<button class="chip" data-co="${c}" data-i="${i}" aria-pressed="${(p.corte||'')===c}">${c||'Me da igual'}</button>`).join('')}</div>`:''}</div>`).join(''):''}
       ${refs?`<span class="f">Refresco${refs.length>1?'s':''}</span>${refs.map((r,i)=>`<div class="chips" style="margin-bottom:6px">${REF.map(([k,l])=>`<button class="chip" data-rf="${k}" data-i="${i}" aria-pressed="${r===k}">${l}</button>`).join('')}</div>`).join('')}`:''}
+      ${extras?`<span class="f">¿Sabor extra? <small style="font-weight:500;color:var(--humo)">opcional · +$25 c/u</small></span><div class="chips">${SABORES.map(([k,l])=>`<button class="chip" data-ex="${k}" aria-pressed="${extras.includes(k)}" ${OFF.has('sab-'+k)?'disabled':''}>${l}</button>`).join('')}</div>`:''}
       ${sabs?`<span class="f">Sabores (toca para agregar)</span><div class="chips">${SABORES.map(([k,l])=>`<button class="chip" data-ss="${k}">${l}${sabs.filter(x=>x===k).length?' ×'+sabs.filter(x=>x===k).length:''}</button>`).join('')}</div>${sabs.length?'<button class="limpiar" id="ssClr" style="margin-top:8px">Borrar sabores</button>':''}`:''}
-      <div class="acts"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn main" id="ok" ${sabs&&!sabs.length?'disabled':''}>Agregar · ${money(precioLinea({id:m.id,q:sabs?sabs.length||1:q,media}))}</button></div>`);
+      <div class="acts"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn main" id="ok" ${sabs&&!sabs.length?'disabled':''}>Agregar · ${money(precioLinea({id:m.id,q:sabs?sabs.length||1:q,media,extras}))}</button></div>`);
     $('#cx').onclick=cerrar; $('#cancel').onclick=cerrar;
     if($('#mn')){ $('#mn').onclick=()=>{if(q>1){q--; if(pzs)pzs=ajustaPzs(m,q,pzs); if(refs)refs=ajustaRefs(m,q,refs); pinta();}}; $('#pl').onclick=()=>{q++; if(pzs)pzs=ajustaPzs(m,q,pzs); if(refs)refs=ajustaRefs(m,q,refs); pinta();}; }
     $$('[data-md]').forEach(b=>b.onclick=()=>{media=b.dataset.md==='1';pinta();});
@@ -307,9 +331,10 @@ function agregar(m){
     $$('[data-sb]').forEach(b=>b.onclick=()=>{pzs[+b.dataset.i].s[+b.dataset.h]=b.dataset.sb;pinta();});
     $$('[data-co]').forEach(b=>b.onclick=()=>{pzs[+b.dataset.i].corte=b.dataset.co;pinta();});
     $$('[data-rf]').forEach(b=>b.onclick=()=>{refs[+b.dataset.i]=b.dataset.rf;pinta();});
+    $$('[data-ex]').forEach(b=>b.onclick=()=>{const k=b.dataset.ex,i=extras.indexOf(k); if(i<0) extras.push(k); else extras.splice(i,1); pinta();});
     $$('[data-ss]').forEach(b=>b.onclick=()=>{sabs.push(b.dataset.ss);pinta();});
     if($('#ssClr')) $('#ssClr').onclick=()=>{sabs.length=0;pinta();};
-    $('#ok').onclick=()=>{venta.push({id:m.id,q:sabs?sabs.length:q,...(m.media?{media}:{}),...(pzs?{pzs}:{}),...(refs?{refs}:{}),...(sabs?{sabs:[...sabs]}:{})}); cerrar(); refrescar(); toast(`Agregado: ${m.n}`);};
+    $('#ok').onclick=()=>{venta.push({id:m.id,q:sabs?sabs.length:q,...(m.media?{media}:{}),...(pzs?{pzs}:{}),...(refs?{refs}:{}),...(sabs?{sabs:[...sabs]}:{}),...(extras&&extras.length?{extras:[...extras]}:{})}); cerrar(); refrescar(); toast(`Agregado: ${m.n}`);};
   };
   const filaSab=(i,h,p)=>`<div class="chips">${SABORES.map(([k,l])=>`<button class="chip" data-sb="${k}" data-i="${i}" data-h="${h}" aria-pressed="${p.s[h]===k}" ${OFF.has('sab-'+k)?'disabled':''}>${l}</button>`).join('')}</div>`;
   pinta();
@@ -326,7 +351,7 @@ function cobrar(){
       ${forma==='Efectivo'?`<span class="f">¿Con cuánto paga?</span><input type="number" id="recibe" inputmode="numeric" placeholder="0" value="${recibe||''}">
         <div class="billetes">${[t,100,200,500,1000].filter((v,i,a)=>a.indexOf(v)===i&&v>=t).map(v=>`<button data-bi="${v}">${v===t?'Exacto':money(v)}</button>`).join('')}</div>
         <div class="cambio ${recibe&&cambio<0?'falta':''}"><span>${recibe&&cambio<0?'Falta':'Cambio'}</span><b>${recibe?money(Math.abs(cambio)):'—'}</b></div>`
-      :`<p class="sub" style="margin-top:12px">${forma==='Tarjeta'?'Cobra en la terminal de Mercado Pago y confirma aquí.':'Revisa que llegó la transferencia y confirma aquí.'}</p>`}
+      :`<p class="sub" style="margin-top:12px">${forma==='Tarjeta'?'Cobra en la terminal de tarjeta y confirma aquí.':'Revisa que llegó la transferencia y confirma aquí.'}</p>`}
       <div class="acts"><button class="btn ghost" id="cancel">Regresar</button><button class="btn verde" id="ok" ${forma==='Efectivo'&&recibe&&cambio<0?'disabled':''}>Confirmar venta</button></div>`);
     $('#cx').onclick=cerrar; $('#cancel').onclick=cerrar;
     $$('[data-fp]').forEach(b=>b.onclick=()=>{forma=b.dataset.fp;pinta();});
