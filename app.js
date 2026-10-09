@@ -277,7 +277,7 @@ function avisoHorario(){
 
 // ===== Guía «¿Cómo pedir?» =====
 // Cuando esté listo el video, sube tutorial.mp4 (y tutorial.jpg de portada) y pon aquí: 'tutorial.mp4'
-const VIDEO_TUTORIAL='';
+const VIDEO_TUTORIAL='tutorial.mp4';
 const PASOS=[
   ['Elige lo que se te antoje','Toca un producto, escoge sabor y cantidad, y agrégalo.'],
   ['Revisa tu pedido','Toca el carrito de arriba para ver o cambiar lo que llevas.'],
