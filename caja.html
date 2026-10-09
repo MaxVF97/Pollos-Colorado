@@ -51,6 +51,18 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .prod .t b{font-family:var(--display);font-weight:400;font-size:16px;line-height:1.08;text-transform:uppercase;letter-spacing:.01em}
 .prod .t span{font-family:var(--display);font-size:17px;color:var(--ambar);white-space:nowrap}
 .prod .cnt{position:absolute;top:6px;right:6px;min-width:26px;height:26px;border-radius:999px;background:var(--naranja);color:var(--carbon);font-weight:800;display:grid;place-items:center;padding:0 6px}
+.pw{position:relative;display:flex}
+.pw .prod{flex:1;width:100%}
+.fav{position:absolute;top:6px;left:6px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(18,14,11,.72);border:1.5px solid rgba(255,255,255,.25);z-index:2}
+.fav svg{fill:none;stroke:#F5ECE1;stroke-width:1.8;stroke-linejoin:round}
+.fav.on{background:#F2B233;border-color:#F2B233}
+.fav.on svg{fill:#120E0B;stroke:#120E0B}
+.cats .cat-fav{color:#F2B233}
+.cats .cat-fav[aria-pressed="true"]{border-color:#F2B233;background:color-mix(in srgb,#F2B233 20%,var(--brasa));color:var(--hueso)}
+.cats button small{font-size:12px;background:#F2B233;color:var(--carbon);border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}
+.fav-vacio{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:40px 20px;color:var(--humo);text-align:center}
+.fav-vacio svg{width:42px;height:42px;fill:none;stroke:#F2B233;stroke-width:1.6}
+.fav-vacio b{color:var(--hueso);font-size:18px}
 .prod.off{opacity:.4;pointer-events:none}
 .prod.nodia{opacity:.4;pointer-events:none;filter:grayscale(1)}
 .prod.nodia::after{content:"SOLO VIERNES";position:absolute;top:30%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);font-family:var(--display);font-size:18px;color:var(--hueso);border:2px solid var(--hueso);padding:2px 10px;border-radius:6px;white-space:nowrap}
@@ -279,7 +291,13 @@ const LS='colorado-caja-demo';
 let DB={folio:1,ventas:[]};
 try{const g=JSON.parse(localStorage.getItem(LS)||'null'); if(g&&Array.isArray(g.ventas)) DB=g;}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(DB));}catch(e){}};
-let cat='pollos', venta=[], canal='Mostrador';
+// Favoritos (se guardan en esta tablet)
+const LSF='colorado-caja-favs';
+let FAVS=['p2','p3','papas'];
+try{const f=JSON.parse(localStorage.getItem(LSF)||'null'); if(Array.isArray(f)) FAVS=f;}catch(e){}
+const saveFavs=()=>{try{localStorage.setItem(LSF,JSON.stringify(FAVS));}catch(e){}};
+const STAR='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17.1l-5.7 3.1 1.2-6.3L2.8 9.5l6.4-.8z"/></svg>';
+let cat=FAVS.length?'fav':'pollos', venta=[], canal='Mostrador';
 
 const precioLinea=l=>{const m=byId(l.id);
   if(m.id==='flautas') return Math.floor(l.q/5)*35+(l.q%5)*8;
@@ -300,15 +318,22 @@ function detalle(l){
 
 // ============ Pintar menú ============
 function pintarCats(){
-  $('#cats').innerHTML=CATS.map(([k,l])=>`<button data-cat="${k}" aria-pressed="${k===cat}">${l}</button>`).join('');
+  $('#cats').innerHTML=[['fav','★ Favoritos'],...CATS].map(([k,l])=>`<button data-cat="${k}" aria-pressed="${k===cat}" ${k==='fav'?'class="cat-fav"':''}>${l}${k==='fav'&&FAVS.length?` <small>${FAVS.length}</small>`:''}</button>`).join('');
   $$('[data-cat]').forEach(b=>b.onclick=()=>{cat=b.dataset.cat;pintarCats();pintarGrid();});
 }
 function pintarGrid(){
-  $('#grid').innerHTML=M.filter(m=>m.c===cat).map(m=>{
+  const lista=cat==='fav'?FAVS.map(byId).filter(Boolean):M.filter(m=>m.c===cat);
+  if(cat==='fav'&&!lista.length){ $('#grid').innerHTML='<div class="fav-vacio">'+STAR+'<b>Aún no tienes favoritos</b><span>Toca la estrella de cualquier producto para tenerlo aquí a la mano.</span></div>'; return; }
+  $('#grid').innerHTML=lista.map(m=>{
     const n=venta.filter(l=>l.id===m.id).reduce((a,l)=>a+l.q,0);
     const off=OFF.has(m.id)||(m.base&&OFF.has(m.base)), nodia=SOLO_VIERNES.has(m.id)&&diaHoy()!==5;
-    return `<button class="prod ${off?'off':''} ${nodia&&!off?'nodia':''}" data-p="${m.id}"><div class="ph" style="background-image:url(${m.img}.webp)"></div>
-      <div class="t"><b>${esc(m.n)}</b><span>${money(m.p)}</span></div>${n?`<span class="cnt">${n}</span>`:''}</button>`;}).join('');
+    const fv=FAVS.includes(m.id);
+    return `<div class="pw"><button class="prod ${off?'off':''} ${nodia&&!off?'nodia':''}" data-p="${m.id}"><div class="ph" style="background-image:url(${m.img}.webp)"></div>
+      <div class="t"><b>${esc(m.n)}</b><span>${money(m.p)}</span></div>${n?`<span class="cnt">${n}</span>`:''}</button>
+      <button class="fav ${fv?'on':''}" data-fv="${m.id}" aria-label="${fv?'Quitar de favoritos':'Agregar a favoritos'}" aria-pressed="${fv}">${STAR}</button></div>`;}).join('');
+  $$('[data-fv]').forEach(b=>b.onclick=e=>{e.stopPropagation(); const id=b.dataset.fv, i=FAVS.indexOf(id);
+    if(i<0){FAVS.push(id); toast(`★ ${byId(id).n} en favoritos`);} else {FAVS.splice(i,1); toast(`${byId(id).n} quitado de favoritos`);}
+    saveFavs(); pintarCats(); pintarGrid();});
   $$('[data-p]').forEach(b=>b.onclick=()=>agregar(byId(b.dataset.p)));
 }
 function pintarVenta(){
