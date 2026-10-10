@@ -98,8 +98,10 @@ const disponibleOp=(g,k)=>!apagado(g.pref+k);
 //  medio y cuarto → un sabor
 const gSab=piezas=>({k:'sab',t:'Sabor de tu pollo',ops:SABORES,pref:'sab-',tipo:'piezas',piezas});
 // Sabor extra o doble: se suma a los incluidos, $25 cada uno
-// Costillas: el sabor no va incluido, se agrega como extra
-const gSabCostilla={k:'extra',t:'¿Le pones sabor?',ops:SABORES.filter(x=>x[0]!=='adobado'),pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,etiqueta:'Sabor',boton:'+ Agregar sabor a tus costillas',ayuda:`Las costillas no incluyen sabor. Opcional, +$${SABOR_EXTRA} cada uno.`};
+// Costillas: la orden completa incluye 2 salsas de sabor (toda de un sabor o mitad y mitad).
+// La media orden incluye 1 sabor (como el medio pollo).
+const gSabCost={k:'sab',t:'Sabor de tus costillas',ops:SABORES.filter(x=>x[0]!=='adobado'),pref:'sab-',tipo:'piezas',piezas:['costilla'],piezasMedia:['costmedia']};
+const gSabCostilla={k:'extra',t:'¿Sabor extra?',ops:SABORES.filter(x=>x[0]!=='adobado'),pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,etiqueta:'Sabor extra',boton:'+ Agregar sabor extra',ayuda:`Opcional, +$${SABOR_EXTRA} cada uno.`};
 const gExtra={k:'extra',t:'¿Sabor extra o doble?',ops:SABORES.filter(x=>x[0]!=='adobado'),pref:'sab-',tipo:'multi',precio:SABOR_EXTRA,ayuda:`Opcional, +$${SABOR_EXTRA} cada uno. Para doble, elige el mismo sabor que arriba.`};
 const gRef=n=>({k:'ref',t:n>1?'Refrescos grandes':'Refresco grande',ops:REFRESCOS,pref:'',tipo:'exacto',por:n,ayuda:n>1?`Elige ${n} refrescos de 1.5 L.`:'Refresco de 1.5 L.',slot:'Refresco'});
 
@@ -114,7 +116,7 @@ const MENU=[
  {id:'p4',base:'pollo',sec:'paquetes',n:'Paquete 4',s:'1 pollo y 1/2',p:365,img:'p4',inc:[['','1 pollo y 1/2'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['sopa','1 sopa de codito'],['papas','1 orden de papas']],g:[gSab(['pollo','medio']),gExtra]},
  {id:'p5',base:'pollo',sec:'paquetes',n:'Paquete 5',s:'3 pollos',p:695,img:'p5',inc:[['','3 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','2 refrescos grandes'],['cebollita','Cebollita'],['chile','Chile']],g:[gSab(['pollo','pollo','pollo']),gExtra,gRef(2)]},
  {id:'viernes',base:'pollo',sec:'viernes',n:'Promoción de viernes',s:'2 pollos',p:449,img:'viernes',inc:[['','2 pollos'],['arroz','Arroz'],['salsa','Salsa'],['tortillas','Tortillas'],['ref15','1 refresco grande']],g:[gSab(['pollo','pollo']),gExtra,gRef(1)]},
- {id:'costillas',sec:'costillas',n:'Costillas',s:'1 kg de costilla',p:290,media:150,img:'costillas',inc:[['','1 kg de costilla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebollita'],['chile','Chile toreado'],['papas','Orden de papas cambray'],['limon','Limón']],g:[gSabCostilla]},
+ {id:'costillas',sec:'costillas',n:'Costillas',s:'1 kg de costilla',p:290,media:150,img:'costillas',inc:[['','1 kg de costilla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebollita'],['chile','Chile toreado'],['papas','Orden de papas cambray'],['limon','Limón'],['','Sabor a elegir (2 salsas en la orden completa)']],g:[gSabCost,gSabCostilla]},
  {id:'arrachera',sec:'arrachera',n:'Arrachera texana',s:'Lo más premium del menú',p:320,media:160,img:'arrachera',inc:[['','1 kg de arrachera'],['frijoles','Frijoles de la olla'],['tortillas','Tortillas'],['salsa','Salsa'],['cebollita','Cebolla'],['chile','Chile toreado'],['limon','Limón']]},
  {id:'flautas',sec:'extras',n:'Flautas',d:'$8 c/u · cada 5 por $35',p:8,img:'flautas'},
  {id:'arroz',sec:'extras',n:'Arroz',d:'Orden',p:20,img:'arroz'},
@@ -123,6 +125,9 @@ const MENU=[
  {id:'ensalada',sec:'extras',n:'Ensalada',d:'Orden',p:20,img:'ensalada'},
  {id:'papas',sec:'extras',n:'Papas cambray',d:'Orden',p:40,img:'papas'},
  {id:'sopa',sec:'extras',n:'Sopa de codito',d:'Orden',p:40,img:'sopa'},
+ {id:'cebollaasada',base:'cebollita',sec:'extras',n:'Cebolla asada',d:'Pieza, al carbón',p:10,img:'cebolla',sinNota:1},
+ {id:'chileasado',base:'chile',sec:'extras',n:'Chile toreado',d:'Pieza, asado al carbón',p:10,img:'chiles',sinNota:1},
+ {id:'bolsatotopos',base:'totopos',sec:'extras',n:'Bolsa de totopos',d:'Bolsa',p:10,img:'totopos',sinNota:1},
  {id:'refgrande',sec:'extras',n:'Refresco 1.5 L',d:'Coca-Cola o Sidral Mundet',p:38,img:'coca15',g:[gRef(1)]},
  {id:'coca450',sec:'extras',n:'Coca-Cola 450 ml',d:'Refresco chico',p:25,img:'coca450'},
 ];
@@ -185,7 +190,8 @@ function eleccionTxt(g,o){
   return e.map(([k,n])=>`${n} ${nom[k]}`).join(', ');
 }
 // Renglones de detalle de una línea del pedido: [["Sabores","2 BBQ, 1 Ajo"], ...]
-const NOMBRE_PIEZA={pollo:'Pollo',medio:'Medio pollo',cuarto:'Cuarto'};
+const NOMBRE_PIEZA={pollo:'Pollo',medio:'Medio pollo',cuarto:'Cuarto',costilla:'Costillas',costmedia:'Costillas'};
+const DOS_MITADES=t=>t==='pollo'||t==='costilla';
 // Le pone número a cada pieza solo si hay más de una del mismo tipo
 function etiquetasPiezas(pzs){
   const tot={}, n={}; pzs.forEach(p=>tot[p.t]=(tot[p.t]||0)+1);
@@ -193,8 +199,8 @@ function etiquetasPiezas(pzs){
 }
 const nomSabor=k=>(SABORES.find(x=>x[0]===k)||[,k])[1];
 function textoPieza(p){
-  if(p.t==='pollo'&&p.modo==='mitad'&&p.s[1]&&p.s[1]!==p.s[0]) return `½ ${nomSabor(p.s[0])} y ½ ${nomSabor(p.s[1])}`;
-  return nomSabor(p.s[0])+(p.t==='pollo'?' completo':'')+(p.t==='cuarto'&&p.corte?` · ${p.corte}`:'');
+  if(DOS_MITADES(p.t)&&p.modo==='mitad'&&p.s[1]&&p.s[1]!==p.s[0]) return `½ ${nomSabor(p.s[0])} y ½ ${nomSabor(p.s[1])}`;
+  return nomSabor(p.s[0])+(p.t==='pollo'?' completo':p.t==='costilla'?' (toda la orden)':'')+(p.t==='cuarto'&&p.corte?` · ${p.corte}`:'');
 }
 function detalles(c){
   const m=byId(c.id), d=[];
@@ -232,7 +238,7 @@ const IC={
 // ===== Pintar la carta =====
 function enCarrito(id){return CART.filter(c=>c.id===id).reduce((a,c)=>a+c.q,0);}
 function notaSabor(m){
-  if((m.g||[]).some(x=>x===gSabCostilla)) return `<p class="nota-sabor">🔥 Sabor opcional +${money(SABOR_EXTRA)}</p>`;
+  if((m.g||[]).some(x=>x===gSabCost)) return '<p class="nota-sabor">🔥 Incluye sabor: la completa, un sabor o mitad y mitad</p>';
   const g=(m.g||[]).find(x=>x.k==='sab'||x.k==='sabx'); if(!g) return '';
   return g.piezas.includes('pollo') ? '<p class="nota-sabor">🔥 Sabor a elegir: completo o mitad y mitad</p>' : '<p class="nota-sabor">🔥 Incluye 1 sabor a elegir</p>';
 }
@@ -325,7 +331,7 @@ function render(){
     ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<div class="sab-banner" style="background-image:url(${IMG.sabores})"><span>11 sabores, bañados al carbón</span></div><p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="leyenda"><span>${IC.arena} Mayor tiempo de espera</span><span>${IC_SAB.salado} Salado</span><span>${IC_SAB.flama} Picante</span><span>${IC_SAB.dulce} Dulce</span><span>${IC_SAB.dulce}${IC_SAB.acido} Agridulce</span></div><div class="sabores-lista">${SABORES.map(([k,l,d,t])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}</b><div class="fila-nivel">${nivelSabor(t)}${apagado('sab-'+k)?'<span class="tag">Agotado</span>':''}</div><span>${esc(d)}</span></div>`).join('')}</div>`)}
     ${sec('paquetes','Paquetes','Para compartir en familia. Eliges los sabores al agregarlo.',`<div class="grid">${MENU.filter(m=>m.sec==='paquetes').map(m=>card(m)).join('')}</div>`)}
     ${sec('viernes','Promo de viernes',VIERNES?'Solo hoy.':'Se puede pedir únicamente los viernes.',card(byId('viernes'),true))}
-    ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. El sabor se agrega aparte.',card(byId('costillas'),true)+`<div class="sab-banner" style="background-image:url(${IMG.costcharola});margin-top:14px"><span>Jugosas, directo de la brasa</span></div>`)}
+    ${sec('costillas','Costillas','1 kg de costilla al carbón con papas cambray. La orden completa incluye 2 salsas de sabor (un sabor o mitad y mitad); la media orden, 1 sabor.',card(byId('costillas'),true)+`<div class="sab-banner" style="background-image:url(${IMG.costcharola});margin-top:14px"><span>Jugosas, directo de la brasa</span></div>`)}
     ${sec('arrachera','Arrachera texana','',card(byId('arrachera'),true)+`<div class="galeria"><div style="background-image:url(${IMG.arrac})" role="img" aria-label="Arrachera en trozos"></div><div style="background-image:url(${IMG.arrachera2})" role="img" aria-label="Arrachera en el asador"></div></div>`)}
     ${sec('extras','Extras','Agrégalos a tu pedido.',`<div class="sab-banner" style="background-image:url(${IMG.acomp})"><span>Acompáñalo como se debe</span></div><div class="extras">${MENU.filter(m=>m.sec==='extras').map(extra).join('')}</div>`)}
     <div class="cinta">Sabor que se comparte <span>|</span> Hecho al carbón</div>
@@ -412,17 +418,18 @@ function abrirItem(m,idx){
   // Hasta 2 lugares se eligen con botones (uno por lugar); con más, con + y −
   const modoBotones=g=>(g.tipo==='exacto'||g.tipo==='opcional') && meta(g)<=2;
   // Lugares: ["adobado","bbq"] <-> conteo {adobado:1,bbq:1}
-  const lugares={};
+  const lugares={}, memo={};
   let verExtra=grupos.some(g=>g.tipo==='multi'&&suma(sel[g.k])>0);   // la sección de sabor extra va plegada
   const aLugares=g=>{const r=[]; Object.entries(sel[g.k]).forEach(([k,n])=>{for(let i=0;i<n;i++) r.push(k);}); return r;};
   const deLugares=g=>{const o={}; lugares[g.k].forEach(k=>{ if(k) o[k]=(o[k]||0)+1; }); sel[g.k]=o;};
   // Ajusta las elecciones cuando cambia la cantidad
   function ajustar(){
     grupos.forEach(g=>{
-      const o=sel[g.k], def=primeraLibre(g);
+      let o=sel[g.k]; const def=primeraLibre(g);
       if(g.tipo==='piezas'){ // una pieza por cada pollo / medio / cuarto según la cantidad
-        const tipos=[]; for(let i=0;i<q;i++) tipos.push(...g.piezas);
-        sel[g.k]=tipos.map((t,i)=>o[i]&&o[i].t===t?o[i]:{t,modo:'completo',s:[def]});
+        const tipos=[]; for(let i=0;i<q;i++) tipos.push(...(media&&g.piezasMedia?g.piezasMedia:g.piezas));
+        // media orden de costilla: 1 sabor; al cambiar de tamaño se conserva el primer sabor elegido
+        sel[g.k]=tipos.map((t,i)=>o[i]&&o[i].t===t?o[i]:{t,modo:'completo',s:[o[i]&&o[i].s[0]?o[i].s[0]:(t.startsWith('cost')?'':def)]});
         sel[g.k].forEach(p=>{ if(p.corte&&OFF.has(CORTES[p.corte])) p.corte=''; });
         return;
       }
@@ -447,16 +454,16 @@ function abrirItem(m,idx){
     <p class="sub">${sub}</p>
     ${sin.length?`<p class="aviso-falta"><b>Hoy no tenemos ${esc(sin.join(', ').toLowerCase())}.</b> Si continúas, tu pedido va sin eso.</p>`:''}
     ${esCarne?'<p class="tip con-ic">'+IC.arena+' La carne tarda de 30 a 45 min en estar lista. Te sugerimos pedir con anticipación.</p>':''}
-    ${m.media?`<span class="f">Tamaño</span><div class="seg"><button class="opt" data-media="0"><b>Orden completa</b><span>${money(m.p)}</span></button><button class="opt" data-media="1"><b>Media orden</b><span>${money(m.media)} · incluye lo mismo</span></button></div>`:''}
+    ${m.media?`<span class="f">Tamaño</span><div class="seg"><button class="opt" data-media="0"><b>Orden completa</b><span>${money(m.p)}</span></button><button class="opt" data-media="1"><b>Media orden</b><span>${money(m.media)} · ${m.id==='costillas'?'incluye 1 sabor':'incluye lo mismo'}</span></button></div>`:''}
     ${porCantidad?'':`<span class="f">Cantidad</span>
     <div class="stepper"><button id="mn" aria-label="Menos">−</button><span id="q"></span><button id="pl" aria-label="Más">+</button></div>`}
     ${esFlauta?'<p class="small" id="desg"></p><p class="small">Cada grupo de 5 flautas cuesta $35; las sueltas, $8 cada una.</p>':''}
     <div id="grupos"></div>
-    ${tieneSabor?'<p class="tip">¿Quieres la salsa aparte? Escríbelo aquí abajo.</p>':''}
+    ${m.sinNota?'':`${tieneSabor?'<p class="tip">¿Quieres la salsa aparte? Escríbelo aquí abajo.</p>':''}
     <label class="f" for="nota">¿Alguna indicación? <small>(opcional)</small></label>
-    <textarea id="nota" placeholder="${blanco?'Ej. bien fría':tieneSabor?'Ej. salsa aparte, bien doradito':'Ej. sin cebollita, salsa aparte'}">${esc(prev?prev.nota:'')}</textarea>
+    <textarea id="nota" placeholder="${blanco?'Ej. bien fría':tieneSabor?'Ej. salsa aparte, bien doradito':'Ej. sin cebollita, salsa aparte'}">${esc(prev?prev.nota:'')}</textarea>`}
     <div class="acts"><button class="btn ghost" id="x">Cancelar</button><button class="btn main" id="ok"></button></div>`);
-  const linea=()=>({id:m.id,q,...(m.media?{media}:{}),nota:$('#nota').value.trim(),...(grupos.length?{sel:JSON.parse(JSON.stringify(sel))}:{})});
+  const linea=()=>({id:m.id,q,...(m.media?{media}:{}),nota:$('#nota')?$('#nota').value.trim():'',...(grupos.length?{sel:JSON.parse(JSON.stringify(sel))}:{})});
   const chip=(g,k,l,activo,attrs,extraTxt)=>{const off=k&&!libre(g,k);
     return `<button class="chip" ${attrs} aria-pressed="${activo}" ${off?'disabled':''}>${esc(l)}${extraTxt||''}${off?' · agotado':''}</button>`;};
   function pintarGrupos(){
@@ -465,10 +472,11 @@ function abrirItem(m,idx){
       if(g.tipo==='piezas'){
         const pzs=sel[g.k], et=etiquetasPiezas(pzs);
         const fila=(i,mi)=>`<div class="chips">${g.ops.map(([k,l])=>chip(g,k,l,pzs[i].s[mi]===k,`data-pz="${i}" data-mi="${mi}" data-o="${k}"`)).join('')}</div>`;
-        cuerpo=pzs.map((p,i)=>`<div class="pieza"><div class="pieza-h"><span class="lugar">${esc(et[i])}</span>${p.t==='pollo'?`<div class="modo"><button data-modo="completo" data-pz="${i}" aria-pressed="${p.modo!=='mitad'}">Completo</button><button data-modo="mitad" data-pz="${i}" aria-pressed="${p.modo==='mitad'}">Mitad y mitad</button></div>`:''}</div>
-          ${p.t==='pollo'&&p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${fila(i,0)}<span class="mitad">2ª mitad</span>${fila(i,1)}`:fila(i,0)}
+        if(!pzs.length) return '';
+        cuerpo=pzs.map((p,i)=>`<div class="pieza"><div class="pieza-h"><span class="lugar">${esc(et[i])}</span>${DOS_MITADES(p.t)?`<div class="modo"><button data-modo="completo" data-pz="${i}" aria-pressed="${p.modo!=='mitad'}">${p.t==='costilla'?'Un sabor':'Completo'}</button><button data-modo="mitad" data-pz="${i}" aria-pressed="${p.modo==='mitad'}">Mitad y mitad</button></div>`:''}</div>
+          ${DOS_MITADES(p.t)&&p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${fila(i,0)}<span class="mitad">2ª mitad</span>${fila(i,1)}`:fila(i,0)}
           ${p.t==='cuarto'?`<span class="mitad">¿Qué pieza prefieres? <small>(opcional)</small></span><div class="chips">${['','Pierna y muslo','Ala y pechuga'].map(c=>{const off=c&&OFF.has(CORTES[c]); return `<button class="chip" data-corte="${c}" data-pz="${i}" aria-pressed="${(p.corte||'')===c}" ${off?'disabled':''}>${c||'Me da igual'}${off?' · agotado':''}</button>`;}).join('')}</div>`:''}</div>`).join('');
-        const ayuda=g.piezas.includes('pollo')?'Sin costo. Cada pollo puede ser completo de un sabor o mitad y mitad.':'Incluye 1 sabor sin costo.';
+        const ayuda=g.piezas.includes('costilla')?(media?'La media orden incluye 1 sabor sin costo.':'Incluye 2 salsas de sabor sin costo: toda la orden de un sabor, o mitad y mitad.'):g.piezas.includes('pollo')?'Sin costo. Cada pollo puede ser completo de un sabor o mitad y mitad.':'Incluye 1 sabor sin costo.';
         return `<div class="grupo"><div class="grupo-h"><span class="f">${esc(g.t)}</span></div><p class="small">${ayuda}</p>${cuerpo}</div>`;
       }
       const s=suma(sel[g.k]);
@@ -518,7 +526,7 @@ function abrirItem(m,idx){
     $$('[data-media]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.media==='1')===media));
     pintarGrupos();
     let falta='';
-    grupos.forEach(g=>{ if(g.tipo==='piezas'&&sel[g.k].some(p=>!p.s[0]||(p.modo==='mitad'&&!p.s[1]))) falta='Elige el sabor de tu pollo'; if(g.tipo==='exacto'&&primeraLibre(g)&&suma(sel[g.k])<meta(g)) falta=`Elige ${meta(g)-suma(sel[g.k])} ${g.k==='ref'?'refresco(s)':'sabor(es)'} más`; });
+    grupos.forEach(g=>{ if(g.tipo==='piezas'&&sel[g.k].some(p=>!p.s[0]||(p.modo==='mitad'&&!p.s[1]))) falta=g.piezas.includes('costilla')?'Elige el sabor de tus costillas':'Elige el sabor de tu pollo'; if(g.tipo==='exacto'&&primeraLibre(g)&&suma(sel[g.k])<meta(g)) falta=`Elige ${meta(g)-suma(sel[g.k])} ${g.k==='ref'?'refresco(s)':'sabor(es)'} más`; });
     if(esFlauta) $('#desg').textContent=q+' '+(q>1?'flautas':'flauta')+': '+desgloseFlautas(q);
     if(!q) falta='Elige al menos un sabor';
     $('#ok').disabled=!!falta;

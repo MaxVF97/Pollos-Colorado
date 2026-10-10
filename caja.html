@@ -104,6 +104,14 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .modal{width:100%;max-width:620px;max-height:100%;overflow-y:auto;background:var(--brasa);border:1px solid var(--ceniza);border-radius:18px;padding:20px}
 .modal-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
 .modal h3{margin:0;font-family:var(--display);font-weight:400;font-size:30px;text-transform:uppercase}
+.modal.chico{max-width:440px}
+.modo.fl-modo{display:flex;margin:6px 0 14px}.fl-modo button{flex:1;padding:11px 12px;font-size:15px;white-space:nowrap}
+.fl-fila{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:10px 0}
+.fl-lbl{font-family:var(--label);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.05em}.fl-lbl small{display:block;font-size:13px;color:var(--humo);letter-spacing:0;text-transform:none}
+.stepper.xl button{width:62px;height:62px;font-size:30px}.stepper.xl span{min-width:56px;font-size:28px;font-family:var(--display)}
+.fl-rap{margin-top:4px}.fl-rap .chip{min-width:52px;justify-content:center;text-align:center}
+.fl-res{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--carbon);border:1px solid var(--ceniza)}
+.fl-res b{display:block;font-size:18px}.fl-res span{color:var(--humo);font-size:14px}.fl-res strong{font-family:var(--display);font-weight:400;font-size:32px;color:var(--naranja)}
 .x{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--ceniza);display:grid;place-items:center;flex:none}
 .sub{color:var(--humo);margin:0 0 10px}
 .f{display:block;font-weight:700;margin:14px 0 8px}
@@ -262,7 +270,7 @@ const M=[
  {id:'p4',c:'paquetes',n:'Paquete 4',p:365,img:'p4',pz:['pollo','medio'],base:'pollo'},
  {id:'p5',c:'paquetes',n:'Paquete 5',p:695,img:'p5',pz:['pollo','pollo','pollo'],ref:2,base:'pollo'},
  {id:'viernes',c:'paquetes',n:'Promo viernes',p:449,img:'viernes',pz:['pollo','pollo'],ref:1,base:'pollo'},
- {id:'costillas',c:'carnes',n:'Costillas',p:290,media:150,img:'costillas',extra:1},
+ {id:'costillas',c:'carnes',n:'Costillas',p:290,media:150,img:'costillas',extra:1,pz:['costilla']},
  {id:'arrachera',c:'carnes',n:'Arrachera',p:320,media:160,img:'arrachera'},
  {id:'flautas',c:'extras',n:'Flautas',p:8,img:'flautas',nota:'5 por $35'},
  {id:'arroz',c:'extras',n:'Arroz',p:20,img:'arroz'},
@@ -271,6 +279,9 @@ const M=[
  {id:'ensalada',c:'extras',n:'Ensalada',p:20,img:'ensalada'},
  {id:'salsa',c:'extras',n:'Salsa',p:15,img:'salsa'},
  {id:'salsasabor',c:'extras',n:'Salsa sabor',p:25,img:'sabores',sab:1},
+ {id:'cebollaasada',c:'extras',n:'Cebolla asada',p:10,img:'cebolla',base:'cebollita'},
+ {id:'chileasado',c:'extras',n:'Chile toreado',p:10,img:'chiles',base:'chile'},
+ {id:'bolsatotopos',c:'extras',n:'Bolsa totopos',p:10,img:'totopos',base:'totopos'},
  {id:'refgrande',c:'bebidas',n:'Refresco 1.5 L',p:38,img:'coca15',ref:1},
  {id:'coca450',c:'bebidas',n:'Coca 450 ml',p:25,img:'coca450'},
 ];
@@ -280,7 +291,8 @@ const money=n=>'$'+Math.round(n).toLocaleString('es-MX');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nomSab=k=>(SABORES.find(s=>s[0]===k)||[,k])[1];
 const nomRef=k=>(REF.find(s=>s[0]===k)||[,k])[1];
-const PZN={pollo:'Pollo',medio:'Medio',cuarto:'Cuarto'};
+const PZN={pollo:'Pollo',medio:'Medio',cuarto:'Cuarto',costilla:'Costillas',costmedia:'Costillas'};
+const DOS=t=>t==='pollo'||t==='costilla';
 const OFF=new Set();
 // Día de la semana en Colima (0=domingo … 5=viernes)
 const diaHoy=()=>({Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6})[new Intl.DateTimeFormat('en-US',{timeZone:'America/Mexico_City',weekday:'short'}).format(new Date())];
@@ -307,7 +319,7 @@ function detalle(l){
   const m=byId(l.id), d=[];
   if(l.media!=null&&m.media) d.push(l.media?'Media orden':'Orden completa');
   (l.pzs||[]).forEach((p,i,a)=>{const n=a.filter(x=>x.t===p.t).length>1?' '+(a.slice(0,i+1).filter(x=>x.t===p.t).length):'';
-    d.push(`${PZN[p.t]}${n}: ${p.modo==='mitad'&&p.s[1]!==p.s[0]?`½ ${nomSab(p.s[0])} y ½ ${nomSab(p.s[1])}`:nomSab(p.s[0])}${p.corte?' · '+p.corte:''}`);});
+    d.push(`${PZN[p.t]}${n}: ${p.modo==='mitad'&&p.s[1]!==p.s[0]?`½ ${nomSab(p.s[0])} y ½ ${nomSab(p.s[1])}`:nomSab(p.s[0])+(p.t==='costilla'?' (toda)':p.t==='costmedia'?' (media orden)':'')}${p.corte?' · '+p.corte:''}`);});
   if(l.refs) d.push('Refresco: '+l.refs.map(nomRef).join(', '));
   if(l.sabs) d.push('Sabores: '+l.sabs.map(nomSab).join(', '));
   if(l.extras&&l.extras.length) d.push('Sabor extra: '+l.extras.map(nomSab).join(', ')+` (+${money(l.extras.length*25)})`);
@@ -345,17 +357,48 @@ function pintarVenta(){
     :`<div class="vacio"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2.2l2.3 10.4a1.6 1.6 0 0 0 1.6 1.3h7.7a1.6 1.6 0 0 0 1.5-1.1L20.5 8H6.1"/><circle cx="9.5" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg>Toca un producto para agregarlo a la venta.</div>`;
   $('#total').textContent=money(total());
   $('#cobrar').disabled=!venta.length;
-  $$('[data-mn]').forEach(b=>b.onclick=()=>{const l=venta[+b.dataset.mn]; if(l.q>1){l.q--; if(l.pzs) l.pzs=ajustaPzs(byId(l.id),l.q,l.pzs);} else venta.splice(+b.dataset.mn,1); refrescar();});
-  $$('[data-pl]').forEach(b=>b.onclick=()=>{const l=venta[+b.dataset.pl]; l.q++; if(l.pzs) l.pzs=ajustaPzs(byId(l.id),l.q,l.pzs); if(l.refs) l.refs=ajustaRefs(byId(l.id),l.q,l.refs); refrescar();});
+  $$('[data-mn]').forEach(b=>b.onclick=()=>{const l=venta[+b.dataset.mn]; if(l.q>1){l.q--; if(l.pzs) l.pzs=ajustaPzs(byId(l.id),l.q,l.pzs,l.media);} else venta.splice(+b.dataset.mn,1); refrescar();});
+  $$('[data-pl]').forEach(b=>b.onclick=()=>{const l=venta[+b.dataset.pl]; l.q++; if(l.pzs) l.pzs=ajustaPzs(byId(l.id),l.q,l.pzs,l.media); if(l.refs) l.refs=ajustaRefs(byId(l.id),l.q,l.refs); refrescar();});
   $$('[data-ed]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ed; agregar(byId(venta[i].id),i);});
   $$('[data-rm]').forEach(b=>b.onclick=()=>{venta.splice(+b.dataset.rm,1);refrescar();});
 }
 const refrescar=()=>{pintarGrid();pintarVenta();};
-const ajustaPzs=(m,q,prev=[])=>{const t=[];for(let i=0;i<q;i++)t.push(...m.pz);return t.map((x,i)=>prev[i]&&prev[i].t===x?prev[i]:{t:x,modo:'completo',s:['adobado']});};
+// Costillas: orden completa = 2 salsas (un sabor o mitad y mitad); media orden = 1 sabor
+const ajustaPzs=(m,q,prev=[],media=false)=>{const t=[];for(let i=0;i<q;i++)t.push(...(m.id==='costillas'&&media?['costmedia']:m.pz));return t.map((x,i)=>prev[i]&&prev[i].t===x?prev[i]:{t:x,modo:'completo',s:[prev[i]&&prev[i].s[0]?prev[i].s[0]:(x.startsWith('cost')?'':'adobado')]});};
 const ajustaRefs=(m,q,prev=[])=>{const n=(m.ref||0)*q,r=prev.slice(0,n);while(r.length<n)r.push('coca15');return r;};
 
+// ============ Flautas: ventana chica para elegir cantidad (por pieza o por promoción) ============
+const precioFlautas=q=>Math.floor(q/5)*35+(q%5)*8;
+function flautasPop(idx){
+  const prev=idx!=null?venta[idx]:null, m=byId('flautas');
+  let q=prev?prev.q:1, modo='pz';
+  const pinta=()=>{
+    const pr=Math.floor(q/5), su=q%5;
+    const desg=[pr?`${pr} promo${pr>1?'s':''} de 5`:'', su?`${su} suelta${su>1?'s':''}`:''].filter(Boolean).join(' + ')||'—';
+    abrir(`<div class="modal-h"><h3>Flautas</h3>${X}</div>
+      <p class="sub">$8 c/u · cada 5 por $35</p>
+      <div class="modo fl-modo"><button data-fm="pz" aria-pressed="${modo==='pz'}">Por piezas</button><button data-fm="pr" aria-pressed="${modo==='pr'}">Por promoción</button></div>
+      ${modo==='pz'?`<div class="fl-fila"><span class="fl-lbl">Piezas</span><div class="stepper xl"><button data-fq="-1" aria-label="Menos">−</button><span>${q}</span><button data-fq="1" aria-label="Más">+</button></div></div>
+        <div class="chips fl-rap">${[1,2,3,4,5,10,15,20].map(n=>`<button class="chip" data-fs="${n}" aria-pressed="${q===n}">${n}</button>`).join('')}</div>`
+      :`<div class="fl-fila"><span class="fl-lbl">Promos <small>5 x $35</small></span><div class="stepper xl"><button data-fq="-5" aria-label="Menos promos">−</button><span>${pr}</span><button data-fq="5" aria-label="Más promos">+</button></div></div>
+        <div class="fl-fila"><span class="fl-lbl">Sueltas <small>$8 c/u</small></span><div class="stepper xl"><button data-fu="-1" aria-label="Menos sueltas">−</button><span>${su}</span><button data-fu="1" aria-label="Más sueltas">+</button></div></div>`}
+      <div class="fl-res"><div><b>${q} flauta${q===1?'':'s'}</b><span>${desg}</span></div><strong>${money(precioFlautas(q))}</strong></div>
+      <div class="acts"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn main" id="ok" ${q?'':'disabled'}>${prev?'Guardar':'Agregar'}${q?' · '+money(precioFlautas(q)):''}</button></div>`,'chico');
+    $('#cx').onclick=cerrar; $('#cancel').onclick=cerrar;
+    $$('[data-fm]').forEach(b=>b.onclick=()=>{modo=b.dataset.fm; if(modo==='pr'&&q<5) q=5; pinta();});
+    $$('[data-fq]').forEach(b=>b.onclick=()=>{q=Math.max(0,Math.min(200,q+ +b.dataset.fq)); pinta();});
+    $$('[data-fu]').forEach(b=>b.onclick=()=>{const d=+b.dataset.fu, su=q%5; if((d>0&&su<4)||(d<0&&su>0)) q+=d; pinta();});
+    $$('[data-fs]').forEach(b=>b.onclick=()=>{q=+b.dataset.fs; pinta();});
+    $('#ok').onclick=()=>{ if(!q) return;
+      if(prev) prev.q=q;
+      else { const l=venta.find(x=>x.id==='flautas'&&!x.nota); if(l) l.q+=q; else venta.push({id:'flautas',q}); }
+      cerrar(); refrescar(); toast(prev?`Flautas: ${q}`:`+${q} flauta${q>1?'s':''}`); };
+  };
+  pinta();
+}
+
 // ============ Agregar producto (con opciones si aplica) ============
-function abrir(html){$('#modal').innerHTML=html;$('#veil').classList.add('open');}
+function abrir(html,cls){$('#modal').className='modal'+(cls?' '+cls:'');$('#modal').innerHTML=html;$('#veil').classList.add('open');}
 function cerrar(){$('#veil').classList.remove('open');}
 $('#veil').onclick=e=>{if(e.target.id==='veil')cerrar();};
 const X='<button class="x" id="cx" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
@@ -363,6 +406,8 @@ const X='<button class="x" id="cx" aria-label="Cerrar"><svg width="18" height="1
 const conOpciones=()=>true; // todas las líneas se pueden editar (opciones y nota)
 const NOTAS=['Sin cebolla','Bien dorado','Salsa aparte','Sin picante','Para llevar'];
 function agregar(m,idx){
+  if(m.id==='flautas') return flautasPop(idx);
+  let memoPz=[];
   const prev=idx!=null?venta[idx]:null;
   // Productos simples: se agregan con un toque
   if(!prev&&!m.pz&&!m.media&&!m.ref&&!m.sab){const l=venta.find(x=>x.id===m.id&&!x.nota); if(l) l.q++; else venta.push({id:m.id,q:1}); refrescar(); toast(`+1 ${m.n}`); return;}
@@ -372,17 +417,19 @@ function agregar(m,idx){
     abrir(`<div class="modal-h"><h3>${esc(m.n)}</h3>${X}</div>
       ${m.media?`<span class="f">Tamaño</span><div class="chips"><button class="chip" data-md="0" aria-pressed="${!media}">Orden completa · ${money(m.p)}</button><button class="chip" data-md="1" aria-pressed="${media}">Media orden · ${money(m.media)}</button></div>`:''}
       ${m.sab?'':`<span class="f">Cantidad</span><div class="stepper"><button id="mn">−</button><span>${q}</span><button id="pl">+</button></div>`}
-      ${pzs?pzs.map((p,i)=>`<div class="pieza"><div class="pieza-h"><span>${PZN[p.t]}${pzs.length>1?' '+(i+1):''}</span>${p.t==='pollo'?`<div class="modo"><button data-mo="completo" data-i="${i}" aria-pressed="${p.modo!=='mitad'}">Completo</button><button data-mo="mitad" data-i="${i}" aria-pressed="${p.modo==='mitad'}">Mitad y mitad</button></div>`:''}</div>
+      ${pzs&&pzs.some(p=>p.t==='costilla')?'<p class="sub" style="margin:10px 0 0">Orden completa: incluye 2 salsas de sabor (un sabor o mitad y mitad).</p>':''}
+      ${pzs&&pzs.some(p=>p.t==='costmedia')?'<p class="sub" style="margin:10px 0 0">Media orden: incluye 1 sabor.</p>':''}
+      ${pzs?pzs.map((p,i)=>`<div class="pieza"><div class="pieza-h"><span>${PZN[p.t]}${pzs.length>1?' '+(i+1):''}</span>${DOS(p.t)?`<div class="modo"><button data-mo="completo" data-i="${i}" aria-pressed="${p.modo!=='mitad'}">${p.t==='costilla'?'Un sabor':'Completo'}</button><button data-mo="mitad" data-i="${i}" aria-pressed="${p.modo==='mitad'}">Mitad y mitad</button></div>`:''}</div>
         ${p.modo==='mitad'?`<span class="mitad">1ª mitad</span>${filaSab(i,0,p)}<span class="mitad">2ª mitad</span>${filaSab(i,1,p)}`:filaSab(i,0,p)}
         ${p.t==='cuarto'?`<span class="mitad">Pieza</span><div class="chips">${['','Pierna y muslo','Ala y pechuga'].map(c=>`<button class="chip" data-co="${c}" data-i="${i}" aria-pressed="${(p.corte||'')===c}">${c||'Me da igual'}</button>`).join('')}</div>`:''}</div>`).join(''):''}
       ${refs?`<span class="f">Refresco${refs.length>1?'s':''}</span>${refs.map((r,i)=>`<div class="chips" style="margin-bottom:6px">${REF.map(([k,l])=>`<button class="chip" data-rf="${k}" data-i="${i}" aria-pressed="${r===k}">${l}</button>`).join('')}</div>`).join('')}`:''}
       ${extras?`<button class="extra-tg" id="exTg" aria-expanded="${verExtra}"><span>${verExtra?'−':'+'}</span> Sabor extra <small>+$25 c/u</small>${extras.length?`<em>${extras.map(nomSab).join(', ')}</em>`:''}</button>${verExtra?`<div class="chips" style="margin-top:8px">${SABORES.filter(x=>x[0]!=='adobado').map(([k,l])=>`<button class="chip" data-ex="${k}" aria-pressed="${extras.includes(k)}" ${OFF.has('sab-'+k)?'disabled':''}>${l}</button>`).join('')}</div>`:''}`:''}
       ${sabs?`<span class="f">Sabores (toca para agregar)</span><div class="chips">${SABORES.map(([k,l])=>`<button class="chip" data-ss="${k}">${l}${sabs.filter(x=>x===k).length?' ×'+sabs.filter(x=>x===k).length:''}</button>`).join('')}</div>${sabs.length?'<button class="limpiar" id="ssClr" style="margin-top:8px">Borrar sabores</button>':''}`:''}
       <button class="extra-tg" id="ntTg"><span>${verNota?'−':'+'}</span> Nota <small>opcional</small>${nota&&!verNota?`<em>${esc(nota)}</em>`:''}</button>${verNota?`<input type="text" id="nota" maxlength="80" placeholder="Ej. sin cebolla, bien dorado" value="${esc(nota)}" style="margin-top:8px"><div class="chips" style="margin-top:6px">${NOTAS.map(t=>`<button class="chip chico" data-nt="${t}">${t}</button>`).join('')}</div>`:''}
-      <div class="acts"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn main" id="ok" ${sabs&&!sabs.length?'disabled':''}>${prev?'Guardar cambios':'Agregar'} · ${money(precioLinea({id:m.id,q:sabs?sabs.length||1:q,media,extras}))}</button></div>`);
+      <div class="acts"><button class="btn ghost" id="cancel">Cancelar</button><button class="btn main" id="ok" ${(sabs&&!sabs.length)||(pzs&&pzs.some(p=>!p.s[0]||(p.modo==='mitad'&&!p.s[1])))?'disabled':''}>${prev?'Guardar cambios':'Agregar'} · ${money(precioLinea({id:m.id,q:sabs?sabs.length||1:q,media,extras}))}</button></div>`);
     $('#cx').onclick=cerrar; $('#cancel').onclick=cerrar;
-    if($('#mn')){ $('#mn').onclick=()=>{if(q>1){q--; if(pzs)pzs=ajustaPzs(m,q,pzs); if(refs)refs=ajustaRefs(m,q,refs); pinta();}}; $('#pl').onclick=()=>{q++; if(pzs)pzs=ajustaPzs(m,q,pzs); if(refs)refs=ajustaRefs(m,q,refs); pinta();}; }
-    $$('[data-md]').forEach(b=>b.onclick=()=>{media=b.dataset.md==='1';pinta();});
+    if($('#mn')){ $('#mn').onclick=()=>{if(q>1){q--; if(pzs)pzs=ajustaPzs(m,q,pzs,media); if(refs)refs=ajustaRefs(m,q,refs); pinta();}}; $('#pl').onclick=()=>{q++; if(pzs)pzs=ajustaPzs(m,q,pzs,media); if(refs)refs=ajustaRefs(m,q,refs); pinta();}; }
+    $$('[data-md]').forEach(b=>b.onclick=()=>{media=b.dataset.md==='1'; if(pzs) pzs=ajustaPzs(m,q,pzs,media); pinta();});
     $$('[data-mo]').forEach(b=>b.onclick=()=>{const p=pzs[+b.dataset.i];p.modo=b.dataset.mo;if(p.modo==='mitad'&&!p.s[1])p.s[1]=p.s[0];if(p.modo==='completo')p.s=[p.s[0]];pinta();});
     $$('[data-sb]').forEach(b=>b.onclick=()=>{pzs[+b.dataset.i].s[+b.dataset.h]=b.dataset.sb;pinta();});
     $$('[data-co]').forEach(b=>b.onclick=()=>{pzs[+b.dataset.i].corte=b.dataset.co;pinta();});
@@ -396,7 +443,7 @@ function agregar(m,idx){
     if($('#ssClr')) $('#ssClr').onclick=()=>{sabs.length=0;pinta();};
     $('#ok').onclick=()=>{const nueva={id:m.id,q:sabs?sabs.length:q,...(m.media?{media}:{}),...(pzs?{pzs}:{}),...(refs?{refs}:{}),...(sabs?{sabs:[...sabs]}:{}),...(extras&&extras.length?{extras:[...extras]}:{}),...(nota.trim()?{nota:nota.trim()}:{})}; if(prev) venta[idx]=nueva; else venta.push(nueva); cerrar(); refrescar(); toast(prev?`Actualizado: ${m.n}`:`Agregado: ${m.n}`);};
   };
-  const filaSab=(i,h,p)=>`<div class="chips">${SABORES.map(([k,l])=>`<button class="chip" data-sb="${k}" data-i="${i}" data-h="${h}" aria-pressed="${p.s[h]===k}" ${OFF.has('sab-'+k)?'disabled':''}>${l}</button>`).join('')}</div>`;
+  const filaSab=(i,h,p)=>`<div class="chips">${SABORES.filter(x=>!p.t.startsWith('cost')||x[0]!=='adobado').map(([k,l])=>`<button class="chip" data-sb="${k}" data-i="${i}" data-h="${h}" aria-pressed="${p.s[h]===k}" ${OFF.has('sab-'+k)?'disabled':''}>${l}</button>`).join('')}</div>`;
   pinta();
 }
 
