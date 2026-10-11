@@ -335,3 +335,28 @@ section .tip{margin:0 0 12px}
 /* Logo oficial en el encabezado */
 .marca .logo{width:44px;height:44px;border-radius:50%;flex:none;display:block}
 @media (max-width:480px){.marca .logo{width:38px;height:38px}}
+
+/* ===== Negocio cerrado (renglón «cerrado» de la hoja) ===== */
+.cz-hero{position:relative;overflow:hidden;border-bottom:1px solid var(--ceniza)}
+.cz-hero .bg{position:absolute;inset:0;background-size:cover;background-position:center 40%;opacity:.25;filter:grayscale(.6)}
+.cz-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,var(--carbon),transparent 60%)}
+.cz-hero .wrap{position:relative;z-index:1;padding-block:34px 30px}
+.cz-tag{display:inline-flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--rojo) 18%,transparent);border:1px solid var(--rojo);color:#FF8A8D;font-family:var(--label);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:13px;padding:5px 12px;border-radius:999px}
+.cz-tag i{width:8px;height:8px;border-radius:50%;background:var(--rojo)}
+.cz-h{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:58px;line-height:.95;margin:14px 0 0}
+.cz-h span{color:var(--rojo)}
+.cz-msg{margin:14px 0 0;font-size:18px;max-width:34ch}
+.cz-sub{margin:10px 0 0;color:var(--humo);font-size:15px}
+.cz-btns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.cz-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:16px;text-decoration:none;color:var(--hueso);border:1.5px solid var(--ceniza)}
+.cz-btn.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+.add.cz-off{background:var(--ceniza)!important;color:var(--humo)!important}
+.cz-full{position:fixed;inset:0;z-index:200;background:radial-gradient(120% 80% at 50% 0%,#2a1712 0%,var(--carbon) 60%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px 22px}
+.cz-full img{width:96px;height:96px;border-radius:50%}
+.cz-full .ico{margin:22px 0 4px;color:#9FB4C7}
+.cz-full .cz-h{font-size:54px}
+.cz-full .cz-msg{margin-inline:auto}
+.cz-full .cz-btns{justify-content:center;flex-direction:column;width:100%;max-width:320px}
+.cz-full .cz-btn{justify-content:center}
+.cz-btn{background:transparent;cursor:pointer}.cz-btn.wa{background:var(--wa)}.cz-btn svg{flex:none}
+.cz-full{overflow-y:auto}
