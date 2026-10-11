@@ -308,8 +308,14 @@ function abrirGuia(){
 
 // ===== Vista de negocio cerrado =====
 // Ícono según el mensaje: tormenta si habla del clima; si no, un letrero de "cerrado" neutro
-const IC_TORMENTA='<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16a4 4 0 0 1-.6-7.96A5.5 5.5 0 0 1 17 7.5a3.5 3.5 0 0 1 .5 6.97"/><path d="M12.5 12l-2 4h3l-2 4" stroke="#FFC24C"/><path d="M8 19l-1 2M17 18l-1 2" opacity=".6"/></svg>';
-const IC_LETRERO='<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M7.5 9 12 6l4.5 3"/><rect x="3.5" y="9" width="17" height="9" rx="2"/><path d="M8 13.5h8" stroke="#E5484D" stroke-width="2"/></svg>';
+// Tormenta animada: nubes que se mueven, lluvia y rayo que destella (las animaciones están en estilos.css)
+const IC_TORMENTA='<svg class="tormenta" width="96" height="84" viewBox="0 0 96 84" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+ +'<g transform="translate(4 -9)"><g class="tm-nube2"><path d="M58 30a10 10 0 0 1 19.4-3.2A8 8 0 1 1 80 42H62" stroke="#6E7F8F" stroke-width="3" fill="#1d1a19"/></g></g>'
+ +'<g class="tm-lluvia" stroke="#7FA6C9" stroke-width="2.6"><path class="g1" d="M28 60l-3 7"/><path class="g2" d="M44 62l-3 7"/><path class="g3" d="M60 60l-3 7"/><path class="g4" d="M36 66l-3 7"/></g>'
+ +'<path class="tm-rayo" d="M50 44l-9 15h9l-6 14 15-19h-9l6-10z" fill="#FFC24C" stroke="#FFC24C" stroke-width="1.5"/>'
+ +'<g class="tm-nube"><path d="M24 50a12 12 0 0 1-1.6-23.9A17 17 0 0 1 55 20.5 11 11 0 0 1 67 39.5 10.5 10.5 0 0 1 64 50z" stroke="#9FB4C7" stroke-width="3.2" fill="#231d1a"/></g>'
+ +'</svg>';
+const IC_LETRERO='<svg class="letrero" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M7.5 9 12 6l4.5 3"/><rect x="3.5" y="9" width="17" height="9" rx="2"/><path d="M8 13.5h8" stroke="#E5484D" stroke-width="2"/></svg>';
 const icCierre=()=>/hurac|torment|lluvi|cicl[oó]n|clima|inunda|temporal/i.test(CERRADO.msg)?IC_TORMENTA:IC_LETRERO;
 const btnsCierre=ver=>`<div class="cz-btns"><a class="cz-btn wa" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">${IC.wa} WhatsApp</a>${ver?'<button class="cz-btn" id="czVer" type="button">Ver el menú</button>':`<a class="cz-btn" href="${FACEBOOK}" target="_blank" rel="noopener">${IC.fb} Facebook</a>`}</div>`;
 function heroCerrado(){
@@ -326,7 +332,7 @@ function pantallaCierre(){
   if(!CERRADO.on){ if(vieja){vieja.remove(); document.body.style.overflow='';} return; }
   let visto=''; try{visto=sessionStorage.getItem('colorado-cierre')||'';}catch(e){}
   if(vieja||visto===msgCerrado()) return;
-  document.body.insertAdjacentHTML('beforeend',`<div class="cz-full" id="czFull" role="dialog" aria-modal="true" aria-labelledby="czTit">
+  document.body.insertAdjacentHTML('beforeend',`<div class="cz-full${icCierre()===IC_TORMENTA?' con-tormenta':''}" id="czFull" role="dialog" aria-modal="true" aria-labelledby="czTit">
     <img src="${IMG.logo}" alt="Pollos Colorado" width="96" height="96"><div class="ico">${icCierre()}</div>
     <span class="cz-tag"><i></i>Cerrado temporalmente</span>
     <h1 class="cz-h" id="czTit">Volvemos <span>pronto</span></h1>
