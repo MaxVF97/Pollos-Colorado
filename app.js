@@ -302,7 +302,7 @@ function abrirGuia(){
 
 // ===== Firma del desarrollador (Shinobi Dev) =====
 // Cuando exista el portafolio, pon aquí su enlace y aparecerá el botón en la ventana.
-const DEV_LINK='https://shinobi-dev.pages.dev';
+const DEV_LINK='https://shinobi-dev.com';
 function abrirFirma(){
   abrir(`<div class="firma-card">
     <img src="firma-shinobi.webp" alt="Logo de Shinobi Dev" width="120" height="120">
@@ -375,7 +375,6 @@ function render(){
         <a class="red" href="${INSTAGRAM}" target="_blank" rel="noopener" aria-label="Instagram de Pollos Colorado"><span class="ic">${IC.ig}</span><span>Instagram<small>@polloscolorado</small></span></a>
       </div>
     </div>
-    <div class="credito"><button class="firma-dev" id="firmaBtn" aria-haspopup="dialog"><span>Hecho por</span><img src="firma-shinobi.webp" alt="" width="26" height="26"><b>Shinobi Dev</b></button></div>
   </main>
   <div class="toast" id="toast" role="status"></div>
   <div class="veil" id="veil"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>`;
@@ -383,7 +382,6 @@ function render(){
   $('#cartBtn').onclick=abrirCarrito;
   $('#guiaBtn').onclick=abrirGuia;
   $('#copiar').onclick=copiar;
-  $('#firmaBtn').onclick=abrirFirma;
   $('#veil').onclick=e=>{if(e.target.id==='veil')cerrar();};
   barra();
 }
