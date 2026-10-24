@@ -349,3 +349,44 @@ section .tip{margin:0 0 12px}
 .firma-card .por{margin:6px 0 0;color:var(--naranja);font-weight:700}
 .firma-card .sub{margin:10px 0 0}
 .firma-card .acts{justify-content:center}
+/* ===== Negocio cerrado (renglón «cerrado» de la hoja) ===== */
+.cz-hero{position:relative;overflow:hidden;border-bottom:1px solid var(--ceniza)}
+.cz-hero .bg{position:absolute;inset:0;background-size:cover;background-position:center 40%;opacity:.25;filter:grayscale(.6)}
+.cz-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,var(--carbon),transparent 60%)}
+.cz-hero .wrap{position:relative;z-index:1;padding-block:34px 30px}
+.cz-tag{display:inline-flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--rojo) 18%,transparent);border:1px solid var(--rojo);color:#FF8A8D;font-family:var(--label);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:13px;padding:5px 12px;border-radius:999px}
+.cz-tag i{width:8px;height:8px;border-radius:50%;background:var(--rojo)}
+.cz-h{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:58px;line-height:.95;margin:14px 0 0}
+.cz-h span{color:var(--rojo)}
+.cz-msg{margin:14px 0 0;font-size:18px;max-width:34ch}
+.cz-sub{margin:10px 0 0;color:var(--humo);font-size:15px}
+.cz-btns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.cz-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:16px;text-decoration:none;color:var(--hueso);border:1.5px solid var(--ceniza)}
+.cz-btn.wa{background:var(--wa);border-color:var(--wa);color:#fff}
+.add.cz-off{background:var(--ceniza)!important;color:var(--humo)!important}
+.cz-full{position:fixed;inset:0;z-index:200;background:radial-gradient(120% 80% at 50% 0%,#2a1712 0%,var(--carbon) 60%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px 22px}
+.cz-full img{width:96px;height:96px;border-radius:50%}
+.cz-full .ico{margin:22px 0 4px;color:#9FB4C7}
+.cz-full .cz-h{font-size:54px}
+.cz-full .cz-msg{margin-inline:auto}
+.cz-full .cz-btns{justify-content:center;flex-direction:column;width:100%;max-width:320px}
+.cz-full .cz-btn{justify-content:center}
+.cz-btn{background:transparent;cursor:pointer}.cz-btn.wa{background:var(--wa)}.cz-btn svg{flex:none}
+.cz-full{overflow-y:auto}
+/* Animaciones del aviso de cierre (tormenta y letrero) */
+.tormenta{overflow:visible}
+.tormenta .tm-nube{animation:tmNube 6s ease-in-out infinite}
+.tormenta .tm-nube2{animation:tmNube2 8s ease-in-out infinite}
+.tormenta .tm-lluvia path{animation:tmGota 1.1s linear infinite;opacity:0}
+.tormenta .tm-lluvia .g2{animation-delay:.35s}.tormenta .tm-lluvia .g3{animation-delay:.7s}.tormenta .tm-lluvia .g4{animation-delay:.55s}
+.tormenta .tm-rayo{animation:tmRayo 4.2s linear infinite;opacity:.15}
+@keyframes tmNube{0%,100%{transform:translate(0,0)}50%{transform:translate(4px,-2px)}}
+@keyframes tmNube2{0%,100%{transform:translate(0,0)}50%{transform:translate(-6px,1px)}}
+@keyframes tmGota{0%{transform:translate(0,-4px);opacity:0}20%{opacity:1}100%{transform:translate(-3px,10px);opacity:0}}
+@keyframes tmRayo{0%,70%,100%{opacity:.15;filter:none}72%{opacity:1;filter:drop-shadow(0 0 6px #FFC24C)}75%{opacity:.25}78%{opacity:1;filter:drop-shadow(0 0 10px #FFC24C)}84%{opacity:.15;filter:none}}
+/* destello suave en el fondo al caer el rayo */
+.cz-full.con-tormenta::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 30%,rgba(255,214,140,.16),transparent 70%);opacity:0;animation:tmCielo 4.2s linear infinite;pointer-events:none}
+@keyframes tmCielo{0%,70%,100%{opacity:0}72%{opacity:1}75%{opacity:.2}78%{opacity:.9}86%{opacity:0}}
+.letrero{transform-origin:50% 12%;animation:letrero 3.2s ease-in-out infinite}
+@keyframes letrero{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@media (prefers-reduced-motion:reduce){.tormenta *,.letrero,.cz-full::before{animation:none!important}.tormenta .tm-rayo{opacity:1}}

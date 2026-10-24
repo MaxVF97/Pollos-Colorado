@@ -485,7 +485,7 @@ function ticketHTML(v){
     <div class="r t"><span>TOTAL</span><span>${money(v.total)}</span></div>
     <div class="r"><span>${v.forma}</span><span>${v.recibe?money(v.recibe):''}</span></div>
     ${v.recibe&&v.recibe>v.total?`<div class="r"><span>Cambio</span><span>${money(v.recibe-v.total)}</span></div>`:''}<hr>
-    <div class="c">¡Gracias por tu compra!<br>Sabor que se comparte · Hecho al carbón<br>Pide en línea: polloscolorado.pages.dev</div></div>`;
+    <div class="c">¡Gracias por tu compra!<br>Sabor que se comparte · Hecho al carbón<br>Pide en línea: polloscolorado.shinobi-dev.com</div></div>`;
 }
 function mostrarTicket(v,desdeCorte){
   abrir(`<div class="modal-h"><h3>${desdeCorte?'Ticket':'Venta registrada'}</h3>${X}</div>

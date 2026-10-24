@@ -48,6 +48,10 @@ const IMG=new Proxy({},{get:(_,k)=>`${String(k)}.webp`});
 // La hoja debe llamarse "Agotados" y tener columnas: id | producto | agotado (casilla)
 const SHEET_ID='1ih7P7BB9gkJPP0YDpSOQluiEVkKbgMtFrK_Clnch8uc';   // hoja de PRUEBA de Max (cambiar por la del dueño)
 const OFF=new Set();
+// ===== Negocio cerrado (renglón "cerrado" de la hoja; el mensaje, en la columna D del renglón "mensaje") =====
+const CERRADO={on:false,msg:''};
+const MSG_CERRADO='Por el momento no estamos abriendo. Aquí y en nuestras redes les avisamos cuando volvamos.';
+const msgCerrado=()=>CERRADO.msg||MSG_CERRADO;
 
 // ===== Sabores del pollo =====
 // Cada medio pollo incluye un sabor. En 1/4 de pollo el sabor cuesta $25 extra.
@@ -156,6 +160,7 @@ function proximaApertura(){
 }
 // Estado del negocio para un tipo de entrega
 function estado(modo){
+  if(CERRADO.on) return {abierto:false, cerrado:true, motivo:msgCerrado()};
   const {dia,min}=ahora();
   if(DESCANSO.includes(dia)) return {abierto:false, motivo:`Los martes descansamos. Entregamos de nuevo ${proximaApertura()}.`};
   if(min>=ULTIMO[modo]) return {abierto:false, motivo: modo==='domicilio'&&min<ULTIMO.recoge
@@ -166,7 +171,7 @@ function estado(modo){
 
 const VIERNES=ahora().dia===5;
 const PICO_AHORA=()=>{const m=ahora().min;return m>=PICO[0]&&m<PICO[1];};
-const disponible=m=>!OFF.has(m.id) && !(m.base&&OFF.has(m.base)) && (m.id!=='viernes'||VIERNES) && (m.id!=='refgrande'||!apagado('ref15'));
+const disponible=m=>!CERRADO.on && !OFF.has(m.id) && !(m.base&&OFF.has(m.base)) && (m.id!=='viernes'||VIERNES) && (m.id!=='refgrande'||!apagado('ref15'));
 const faltantes=m=>(m.inc||[]).filter(([k])=>k&&apagado(k)).map(([,l])=>l);
 
 // ===== Precios =====
@@ -256,7 +261,7 @@ function card(m,wide){
       ${m.media?`<p class="nota-media">También en <b>media orden: ${money(m.media)}</b></p>`:''}
       ${sin.length&&ok?`<p class="nota-sin">Hoy sin ${esc(sin.join(', ').toLowerCase())}</p>`:''}
       ${cerradoViernes?'<p class="cerrado">Disponible cada viernes</p>':''}
-      <button class="add" data-add="${m.id}" ${ok?'':'disabled aria-disabled="true"'}>${ok?'Agregar':(cerradoViernes?'Vuelve el viernes':'Agotado')}${n?`<span class="n">${n} en tu pedido</span>`:''}</button>
+      <button class="add" data-add="${m.id}" ${ok?'':'disabled aria-disabled="true"'}>${ok?'Agregar':CERRADO.on?'Cerrado hoy':(cerradoViernes?'Vuelve el viernes':'Agotado')}${n?`<span class="n">${n} en tu pedido</span>`:''}</button>
     </div></article>`;
 }
 function extra(m){
@@ -264,11 +269,12 @@ function extra(m){
   const th=m.img?`style="background-image:url(${IMG[m.img]})${/^coca|^ref/.test(m.id)?';background-color:#fff':''}"`:'';
   return `<button class="ex ${ok?'':'off'}" data-add="${m.id}" ${ok?'':'aria-disabled="true"'}>
     <span class="th" ${th}>${m.img?'':IC[m.ic]}</span>
-    <span class="t"><b>${esc(m.n)}${ok?'':'<span class="tag">Agotado</span>'}</b><span>${esc(m.d)}${n?` · ${n} en tu pedido`:''}</span></span>
+    <span class="t"><b>${esc(m.n)}${ok||CERRADO.on?'':'<span class="tag">Agotado</span>'}</b><span>${esc(m.d)}${n?` · ${n} en tu pedido`:''}</span></span>
     <span class="pr">${money(m.p)}</span><span class="mas" aria-hidden="true">+</span></button>`;
 }
 function sec(id,titulo,sub,html){return `<section id="${id}"><div class="sec-h"><h2>${titulo}</h2><span class="rule"></span>${sub?`<p>${sub}</p>`:''}</div>${html}</section>`;}
 function pillEstado(){
+  if(CERRADO.on) return '<span class="estado off">Cerrado</span>';
   const e=estado('recoge');
   if(e.abierto && !e.antes) return `<span class="estado on">Abierto<span class="largo"> · pedidos hasta ${h12(ULTIMO_PEDIDO)}</span></span>`;
   if(e.abierto && e.antes) return `<span class="estado off"><span class="largo">Entregas </span>desde ${h12(SERV_INI).replace(' pm','')}<span class="largo"> pm</span></span>`;
@@ -314,6 +320,42 @@ function abrirFirma(){
   $('#x').onclick=cerrar;
 }
 
+// ===== Vista de negocio cerrado =====
+// Ícono según el mensaje: tormenta si habla del clima; si no, un letrero de "cerrado" neutro
+// Tormenta animada: nubes que se mueven, lluvia y rayo que destella (las animaciones están en estilos.css)
+const IC_TORMENTA='<svg class="tormenta" width="96" height="84" viewBox="0 0 96 84" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+ +'<g transform="translate(4 -9)"><g class="tm-nube2"><path d="M58 30a10 10 0 0 1 19.4-3.2A8 8 0 1 1 80 42H62" stroke="#6E7F8F" stroke-width="3" fill="#1d1a19"/></g></g>'
+ +'<g class="tm-lluvia" stroke="#7FA6C9" stroke-width="2.6"><path class="g1" d="M28 60l-3 7"/><path class="g2" d="M44 62l-3 7"/><path class="g3" d="M60 60l-3 7"/><path class="g4" d="M36 66l-3 7"/></g>'
+ +'<path class="tm-rayo" d="M50 44l-9 15h9l-6 14 15-19h-9l6-10z" fill="#FFC24C" stroke="#FFC24C" stroke-width="1.5"/>'
+ +'<g class="tm-nube"><path d="M24 50a12 12 0 0 1-1.6-23.9A17 17 0 0 1 55 20.5 11 11 0 0 1 67 39.5 10.5 10.5 0 0 1 64 50z" stroke="#9FB4C7" stroke-width="3.2" fill="#231d1a"/></g>'
+ +'</svg>';
+const IC_LETRERO='<svg class="letrero" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M7.5 9 12 6l4.5 3"/><rect x="3.5" y="9" width="17" height="9" rx="2"/><path d="M8 13.5h8" stroke="#E5484D" stroke-width="2"/></svg>';
+const icCierre=()=>/hurac|torment|lluvi|cicl[oó]n|clima|inunda|temporal/i.test(CERRADO.msg)?IC_TORMENTA:IC_LETRERO;
+const btnsCierre=ver=>`<div class="cz-btns"><a class="cz-btn wa" href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">${IC.wa} WhatsApp</a>${ver?'<button class="cz-btn" id="czVer" type="button">Ver el menú</button>':`<a class="cz-btn" href="${FACEBOOK}" target="_blank" rel="noopener">${IC.fb} Facebook</a>`}</div>`;
+function heroCerrado(){
+  return `<div class="cz-hero" id="inicio"><div class="bg" style="background-image:url(${IMG.portada})"></div><div class="wrap">
+    <span class="cz-tag"><i></i>Aviso importante</span>
+    <h1 class="cz-h">Hoy estamos <span>cerrados</span></h1>
+    <p class="cz-msg">${esc(msgCerrado())}</p>
+    <p class="cz-sub">Puedes ver el menú, pero por ahora no estamos recibiendo pedidos.</p>
+    ${btnsCierre(false)}</div></div>`;
+}
+// Pantalla completa al entrar (una vez por visita y por mensaje); "Ver el menú" la cierra
+function pantallaCierre(){
+  const vieja=$('#czFull');
+  if(!CERRADO.on){ if(vieja){vieja.remove(); document.body.style.overflow='';} return; }
+  let visto=''; try{visto=sessionStorage.getItem('colorado-cierre')||'';}catch(e){}
+  if(vieja||visto===msgCerrado()) return;
+  document.body.insertAdjacentHTML('beforeend',`<div class="cz-full${icCierre()===IC_TORMENTA?' con-tormenta':''}" id="czFull" role="dialog" aria-modal="true" aria-labelledby="czTit">
+    <img src="${IMG.logo}" alt="Pollos Colorado" width="96" height="96"><div class="ico">${icCierre()}</div>
+    <span class="cz-tag"><i></i>Cerrado temporalmente</span>
+    <h1 class="cz-h" id="czTit">Volvemos <span>pronto</span></h1>
+    <p class="cz-msg">${esc(msgCerrado())}</p>${btnsCierre(true)}</div>`);
+  document.body.style.overflow='hidden';
+  $('#czVer').focus({preventScroll:true,focusVisible:false});
+  $('#czVer').onclick=()=>{ try{sessionStorage.setItem('colorado-cierre',msgCerrado());}catch(e){} $('#czFull').remove(); document.body.style.overflow=''; scrollTo(0,0); };
+}
+
 function render(){
   const offList=[...OFF].map(k=>INSUMOS[k]||(byId(k)&&byId(k).n)).filter(Boolean);
   $('#root').innerHTML=`
@@ -328,7 +370,7 @@ function render(){
       <a href="#pollos">Pollos</a><a href="#sabores">Sabores</a><a href="#paquetes">Paquetes</a><a href="#viernes">Promo viernes</a><a href="#costillas">Costillas</a><a href="#arrachera">Arrachera</a><a href="#extras">Extras</a><a href="#ubicacion">Ubicación</a>
     </nav>
   </header>
-  <div class="hero" id="inicio">
+  ${CERRADO.on?heroCerrado():`  <div class="hero" id="inicio">
     <div class="bg" style="background-image:url(${IMG.portada})"></div>
     <div class="wrap">
       <span class="label">Pollos asados al carbón · Villa de Álvarez</span>
@@ -339,7 +381,7 @@ function render(){
       ${avisoHorario()}
       ${offList.length?`<div class="aviso" role="status"><span><b>Hoy se terminó</b><br>${esc(offList.join(', '))}</span></div>`:''}
     </div>
-  </div>
+  </div>`}
   <main class="wrap">
     ${sec('pollos','Pollos','Todos incluyen arroz, salsa, tortillas, cebollita, chile toreado y totopos. Cada medio pollo incluye un sabor a elegir.',`<div class="sab-banner" style="background-image:url(${IMG.pcrudo})"><span>Al carbón desde temprano</span></div><div class="grid">${MENU.filter(m=>m.sec==='pollos').map(m=>card(m)).join('')}</div>`)}
     ${sec('sabores','Nuestros sabores',`Sin costo. Cada pollo completo puede ser de un sabor o mitad y mitad; el 1/2 y el 1/4 llevan un sabor. Sabor extra: ${money(SABOR_EXTRA)}.`,`<div class="sab-banner" style="background-image:url(${IMG.sabores})"><span>11 sabores, bañados al carbón</span></div><p class="tip">¿Quieres la salsa aparte? Pídelo en «¿Alguna indicación?» al agregar tu pollo.</p><div class="leyenda"><span>${IC.arena} Mayor tiempo de espera</span><span>${IC_SAB.salado} Salado</span><span>${IC_SAB.flama} Picante</span><span>${IC_SAB.dulce} Dulce</span><span>${IC_SAB.dulce}${IC_SAB.acido} Agridulce</span></div><div class="sabores-lista">${SABORES.map(([k,l,d,t])=>`<div class="sab-chip ${apagado('sab-'+k)?'off':''}"><b>${esc(l)}</b><div class="fila-nivel">${nivelSabor(t)}${apagado('sab-'+k)?'<span class="tag">Agotado</span>':''}</div><span>${esc(d)}</span></div>`).join('')}</div>`)}
@@ -380,7 +422,7 @@ function render(){
   <div class="veil" id="veil"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>`;
   $$('[data-add]').forEach(b=>b.onclick=()=>{const m=byId(b.dataset.add); if(disponible(m)) abrirItem(m);});
   $('#cartBtn').onclick=abrirCarrito;
-  $('#guiaBtn').onclick=abrirGuia;
+  if($('#guiaBtn')) $('#guiaBtn').onclick=abrirGuia;
   $('#copiar').onclick=copiar;
   $('#veil').onclick=e=>{if(e.target.id==='veil')cerrar();};
   barra();
@@ -721,6 +763,15 @@ function refrescarCarta(){
   if($('#veil')&&$('#veil').classList.contains('open')){pendiente=true;return;}   // no cerrar lo que el cliente está llenando
   const y=scrollY; render(); scrollTo(0,y);
 }
+// CSV con comillas (el mensaje puede llevar comas)
+function leerCSV(t){
+  const filas=[]; let f=[], c='', q=false;
+  for(let i=0;i<t.length;i++){ const ch=t[i];
+    if(q){ if(ch==='"'){ if(t[i+1]==='"'){c+='"';i++;} else q=false; } else c+=ch; }
+    else if(ch==='"') q=true; else if(ch===','){f.push(c);c='';} else if(ch==='\n'){f.push(c);filas.push(f);f=[];c='';} else if(ch!=='\r') c+=ch; }
+  if(c||f.length){f.push(c);filas.push(f);}
+  return filas;
+}
 async function cargarAgotados(){
   if(!SHEET_ID) return;
   try{
@@ -729,12 +780,17 @@ async function cargarAgotados(){
     if(!r.ok) r=await fetch(base);              // si la pestaña tiene otro nombre, usa la primera
     if(!r.ok) return;
     const txt=await r.text();
-    const nuevos=new Set();
-    txt.trim().split('\n').forEach(linea=>{
-      const [id,,agotado]=linea.split(',').map(c=>c.replace(/^"|"$/g,'').trim());
-      if(id && /^(true|verdadero|si|sí|x|1)$/i.test(agotado)) nuevos.add(id);
+    const nuevos=new Set(); let cerrado=false, msg='';
+    leerCSV(txt).forEach(([id='',,agotado='',mensaje=''])=>{
+      id=id.trim(); const si=/^(true|verdadero|si|sí|x|1)$/i.test(agotado.trim());
+      if(id.toLowerCase()==='cerrado'){ cerrado=si; return; }
+      if(id.toLowerCase()==='mensaje'){ msg=mensaje.trim(); return; }   // el mensaje va en la columna D de ese renglón
+      if(id && si) nuevos.add(id);
     });
-    if([...nuevos].sort().join()!==[...OFF].sort().join()){ OFF.clear(); nuevos.forEach(k=>OFF.add(k)); refrescarCarta(); }
+    const cambioCierre=cerrado!==CERRADO.on||(cerrado&&msg!==CERRADO.msg);
+    CERRADO.on=cerrado; CERRADO.msg=msg;
+    if(cambioCierre||[...nuevos].sort().join()!==[...OFF].sort().join()){ OFF.clear(); nuevos.forEach(k=>OFF.add(k)); refrescarCarta(); }
+    pantallaCierre();
   }catch(e){ /* sin conexión a la hoja: se muestra todo disponible */ }
 }
 
