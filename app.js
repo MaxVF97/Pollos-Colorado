@@ -306,20 +306,6 @@ function abrirGuia(){
   $('#x').onclick=()=>{ const v=$('.guia-video'); if(v) v.pause(); cerrar(); const p=$('#pollos'); if(p) p.scrollIntoView({behavior:'smooth'}); };
 }
 
-// ===== Firma del desarrollador (Shinobi Dev) =====
-// Cuando exista el portafolio, pon aquí su enlace y aparecerá el botón en la ventana.
-const DEV_LINK='https://shinobi-dev.com';
-function abrirFirma(){
-  abrir(`<div class="firma-card">
-    <img src="firma-shinobi.webp" alt="Logo de Shinobi Dev" width="120" height="120">
-    <h3>Shinobi Dev</h3>
-    <p class="por">por Max Vargas</p>
-    <p class="sub">Páginas web y sistemas para negocios.<br>Este menú con pedidos por WhatsApp fue hecho por Shinobi Dev.</p>
-    <div class="acts">${DEV_LINK?`<a class="btn main" href="${DEV_LINK}" target="_blank" rel="noopener">Quiero una página así</a>`:''}<button class="btn ghost" id="x">Volver al menú</button></div>
-  </div>`);
-  $('#x').onclick=cerrar;
-}
-
 // ===== Vista de negocio cerrado =====
 // Ícono según el mensaje: tormenta si habla del clima; si no, un letrero de "cerrado" neutro
 // Tormenta animada: nubes que se mueven, lluvia y rayo que destella (las animaciones están en estilos.css)

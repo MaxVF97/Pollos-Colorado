@@ -1,0 +1,17 @@
+# Pollos Colorado — cabeceras de seguridad (Cloudflare Pages)
+# Orígenes permitidos (verificados contra el código del repo):
+#   - app.js / estilos.css / imágenes  -> 'self'
+#   - firma Shinobi Dev                -> https://shinobi-dev.com
+#   - agotados/cierre (gviz)           -> https://docs.google.com
+#   - fuentes Google                   -> https://fonts.googleapis.com / fonts.gstatic.com
+#   - Web Analytics (beacon)           -> https://static.cloudflareinsights.com / cloudflareinsights.com
+#
+# Nota: NO se usa SRI en la firma porque se auto-actualiza desde shinobi-dev.com.
+# Si al desplegar la analítica baja a 0, confirma que Cloudflare inyecta el beacon
+# como script externo (debe ser así) y no como script inline.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://shinobi-dev.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://docs.google.com https://static.cloudflareinsights.com https://cloudflareinsights.com; base-uri 'self'; frame-ancestors 'self'; form-action 'self'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
